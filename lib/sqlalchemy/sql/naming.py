@@ -36,16 +36,6 @@ class ConventionDict(object):
         self.convention = convention
         self._const_name = const.name
 
-    def _key_table_name(self):
-        return self.table.name
-
-    def _column_X(self, idx):
-        if self._is_fk:
-            fk = self.const.elements[idx]
-            return fk.parent
-        else:
-            return list(self.const.columns)[idx]
-
     def _debug_info(self):
         # used to generate a better exception message for debugging
         _debug_msg = 'Constraint Identifiers: '
@@ -56,6 +46,22 @@ class ConventionDict(object):
         except:
             pass
         return _debug_msg
+
+    def _key_table_name(self):
+        return self.table.name
+
+    def _column_X(self, idx):
+        if self._is_fk:
+            fk = self.const.elements[idx]
+            return fk.parent
+        else:
+            if not self.const.columns:
+                raise exc.InvalidRequestError(
+                    "Naming convention requires column %s for a constraint, "
+                    "however the constraint does not have that number of "
+                    "columns. " % idx + self._debug_info()
+                )
+            return list(self.const.columns)[idx]
 
     def _key_constraint_name(self):
         if isinstance(self._const_name, (type(None), _defer_none_name)):

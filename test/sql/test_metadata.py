@@ -5003,11 +5003,40 @@ class NamingConventionTest(fixtures.TestBase, AssertsCompiledSQL):
             ")",
         )
 
+    def test_schematype_ck_no_columns_on_constraint(self):
+        """
+        see https://github.com/sqlalchemy/sqlalchemy/issues/4784#issuecomment-516581616
+
+        this will raise an error because there are no columns to name the constraint with
+
+            u1 = Table(
+                "user", m1,
+                Column("x", Integer),
+                CheckConstraint('z > 10')
+            )
+
+        unlike other tests, this will trigger immediately on the `Table()` call,
+        because the constraint's name is not "deferred" no name.
+        """
+        m1 = MetaData(
+            naming_convention={"ck": "ck_%(table_name)s_%(column_0_name)s"}
+        )
+
+        assert_raises_message( 
+            exc.InvalidRequestError,
+            r"Naming convention requires column 0 for a constraint, "
+            r"however the constraint does not have that number of columns."
+            r" Constraint Identifiers: Table- `user`; Column\(s\)- .",
+            Table,
+            "user", m1,
+            Column("x", Integer),
+            CheckConstraint('z > 10')
+        )
+
     def test_schematype_ck_name_propagate_conv(self):
         m1 = MetaData(
             naming_convention={"ck": "ck_%(table_name)s_%(constraint_name)s"}
         )
-
         u1 = Table(
             "user", m1, Column("x", Enum("a", "b", name=naming.conv("foo")))
         )
