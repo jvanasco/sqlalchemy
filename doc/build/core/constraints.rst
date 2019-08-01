@@ -446,9 +446,9 @@ event-based approach is included, and can be configured using the argument
 the :class:`.Index` class or individual :class:`.Constraint` classes as keys,
 and Python string templates as values.   It also accepts a series of
 string-codes as alternative keys, ``"fk"``, ``"pk"``,
-``"ix"``, ``"ck"``, ``"uq"`` for foreign key, primary key, index,
-check, and unique constraint, respectively.  The string templates in this
-dictionary are used whenever a constraint or index is associated with this
+``"ix"``, ``"ck"``, ``"type_ck"``, ``"uq"`` for foreign key, primary key, index,
+check, type_check, and unique constraint, respectively.  The string templates in
+this dictionary are used whenever a constraint or index is associated with this
 :class:`.MetaData` object that does not have an existing name given (including
 one exception case where an existing name can be further embellished).
 
@@ -458,6 +458,7 @@ An example naming convention that suits basic cases is as follows::
       "ix": 'ix_%(column_0_label)s',
       "uq": "uq_%(table_name)s_%(column_0_name)s",
       "ck": "ck_%(table_name)s_%(constraint_name)s",
+      "type_ck": "type_ck_%(table_name)s_%(column_0_name)s",
       "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
       "pk": "pk_%(table_name)s"
     }
@@ -675,6 +676,11 @@ one column present, the scan does use a deterministic search, however the
 structure of the expression will determine which column is noted as
 "column zero".
 
+Some backends do not natively support core SqlAlchemy datatypes like
+:class:`.Boolean` and  :class:`.Enum`, so SqlAlchemy enforces standard
+behaviors by automatically generating a CHECK constraint.  These "Type Bound"
+column types will prefer a ``type_ck`` naming convention when available.
+
 .. versionadded:: 1.0.0 The :class:`.CheckConstraint` object now supports
    the ``column_0_name`` naming convention token.
 
@@ -697,19 +703,21 @@ normally by using a convention which includes ``%(constraint_name)s``
 and then applying a name to the type::
 
     metadata = MetaData(
-        naming_convention={"ck": "ck_%(table_name)s_%(constraint_name)s"}
+        naming_convention={"type_ck": "type_ck_%(table_name)s_%(constraint_name)s"}
     )
 
     Table('foo', metadata,
         Column('flag', Boolean(name='flag_bool'))
     )
 
-The above table will produce the constraint name ``ck_foo_flag_bool``::
+The above table will produce the constraint name ``type_ck_foo_flag_bool``::
 
     CREATE TABLE foo (
         flag BOOL,
-        CONSTRAINT ck_foo_flag_bool CHECK (flag IN (0, 1))
+        CONSTRAINT type_ck_foo_flag_bool CHECK (flag IN (0, 1))
     )
+
+Note how the prefix for these constraints is ``type_ck`` and not just ``ck``.
 
 The :class:`.SchemaType` classes use special internal symbols so that
 the naming convention is only determined at DDL compile time.  On PostgreSQL,
@@ -725,19 +733,31 @@ which works nicely with :class:`.SchemaType` since these constraints have
 only one column::
 
     metadata = MetaData(
-        naming_convention={"ck": "ck_%(table_name)s_%(column_0_name)s"}
+        naming_convention={"ck": "ck_%(table_name)s_%(constraint_name)s",
+                           "type_ck": "type_ck_%(table_name)s_%(column_0_name)s",
+                           }
     )
 
     Table('foo', metadata,
-        Column('flag', Boolean())
+        Column('value', Integer),
+        Column('flag', Boolean()),
+        CheckConstraint('value > 5', name='value_gt_5'),
     )
 
 The above schema will produce::
 
     CREATE TABLE foo (
+        value INTEGER,
         flag BOOL,
-        CONSTRAINT ck_foo_flag CHECK (flag IN (0, 1))
+        CONSTRAINT ck_foo_value_gt_5 CHECK (value > 5)
+        CONSTRAINT type_ck_foo_flag CHECK (flag IN (0, 1))
     )
+
+Note how the type-bound :class:`.Boolean` created a contraint name using  the
+"type_ck" naming convention template, while the :class:`.CheckConstraint`
+used the "ck" naming convention template.
+
+.. versionchanged:: 1.3 Introduced the special ``type_ck`` prefix.
 
 .. versionchanged:: 1.0 Constraint naming conventions that don't include
    ``%(constraint_name)s`` again work with :class:`.SchemaType` constraints.

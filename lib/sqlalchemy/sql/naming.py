@@ -46,12 +46,23 @@ class ConventionDict(object):
         else:
             return list(self.const.columns)[idx]
 
+    def _debug_info(self):
+        # used to generate a better exception message for debugging
+        _debug_msg = 'Constraint Identifiers: '
+        try:
+            _debug_msg += "Table- `%s`;" % self.const.table.name
+            _columns = ["`%s`" % i.name for i in self.const.columns]
+            _debug_msg += " Column(s)- %s." % ", ".join(_columns)
+        except:
+            pass
+        return _debug_msg
+
     def _key_constraint_name(self):
         if isinstance(self._const_name, (type(None), _defer_none_name)):
             raise exc.InvalidRequestError(
                 "Naming convention including "
                 "%(constraint_name)s token requires that "
-                "constraint is explicitly named."
+                "constraint is explicitly named. " + self._debug_info()
             )
         if not isinstance(self._const_name, conv):
             self.const.name = None
@@ -118,7 +129,8 @@ class ConventionDict(object):
         raise KeyError(key)
 
 
-_prefix_dict = {
+# NOTE: "base" prefixes might be augmented by `_get_prefixes()`
+_base_prefix_dict = {
     Index: "ix",
     PrimaryKeyConstraint: "pk",
     CheckConstraint: "ck",
@@ -127,11 +139,28 @@ _prefix_dict = {
 }
 
 
-def _get_convention(dict_, key):
+def _get_prefixes(const):
+    """
+    `_get_prefixes(const)` allows for a `_base_prefix` dict item to be augmented
+    in certain use-cases.
 
-    for super_ in key.__mro__:
-        if super_ in _prefix_dict and _prefix_dict[super_] in dict_:
-            return dict_[_prefix_dict[super_]]
+    * `_type_bound` constraints, which are automatically created for Bool/Enum
+      validation on certain backends will prefer a `type_ck` prefix
+    """
+    for super_ in type(const).__mro__:
+        if super_ in _base_prefix_dict:
+            prefix = _base_prefix_dict[super_]
+            if isinstance(const, Constraint) and const._type_bound:
+                if isinstance(const.name, _defer_none_name):
+                    # only use the `type_` prefix if no name was presented
+                    yield "type_%s" % prefix, super_
+            yield prefix, super_
+
+
+def _get_convention(dict_, const):
+    for prefix, super_ in _get_prefixes(const):
+        if prefix in dict_:
+            return dict_[prefix]
         elif super_ in dict_:
             return dict_[super_]
     else:
@@ -140,7 +169,7 @@ def _get_convention(dict_, key):
 
 def _constraint_name_for_table(const, table):
     metadata = table.metadata
-    convention = _get_convention(metadata.naming_convention, type(const))
+    convention = _get_convention(metadata.naming_convention, const)
 
     if isinstance(const.name, conv):
         return const.name
