@@ -4600,8 +4600,10 @@ class NamingConventionTest(fixtures.TestBase, AssertsCompiledSQL):
 
         assert_raises_message(
             exc.InvalidRequestError,
-            r"Naming convention including %\(constraint_name\)s token "
-            "requires that constraint is explicitly named.",
+            r'Naming convention including "%\(constraint_name\)s" token '
+            r"requires that constraint is explicitly named. "
+            r'Check naming convention "ck_%\(table_name\)s_%\(constraint_name\)s", '
+            r'table "user", and column\(s\) "\[\'data\'\]".',
             CheckConstraint,
             u1.c.data == "x",
         )
@@ -4614,8 +4616,10 @@ class NamingConventionTest(fixtures.TestBase, AssertsCompiledSQL):
 
         assert_raises_message(
             exc.InvalidRequestError,
-            r"Naming convention including %\(constraint_name\)s token "
-            "requires that constraint is explicitly named.",
+            r'Naming convention including "%\(constraint_name\)s" token '
+            r"requires that constraint is explicitly named. "
+            r'Check naming convention "ck_%\(table_name\)s_%\(constraint_name\)s", '
+            r'table "user", and column\(s\) "\[\'data\'\]".',
             schema.AddConstraint(ck).compile,
         )
 
@@ -4720,7 +4724,7 @@ class NamingConventionTest(fixtures.TestBase, AssertsCompiledSQL):
         should use the `ck_` prefix and not the `type_ck`."""
         m1 = MetaData(
             naming_convention={"ck": "ck_%(table_name)s_%(constraint_name)s",
-                               "type_ck": "type_ck_%(table_name)s_%(column_0_name)s",
+                               "type_ck": "ck_%(table_name)s_%(column_0_name)s",
                                }
         )
         u1 = Table("user", m1, Column("x", Boolean(name="foo")))
@@ -4747,7 +4751,7 @@ class NamingConventionTest(fixtures.TestBase, AssertsCompiledSQL):
         If the `ck_` is missing in the naming_convention, then only the raw
         constraint name is expected to be used."""
         m1 = MetaData(
-            naming_convention={"type_ck": "type_ck_%(table_name)s_%(column_0_name)s",
+            naming_convention={"type_ck": "ck_%(table_name)s_%(column_0_name)s",
                                }
         )
         u1 = Table("user", m1, Column("x", Boolean(name="foo")))
@@ -4776,7 +4780,7 @@ class NamingConventionTest(fixtures.TestBase, AssertsCompiledSQL):
         """
         m1 = MetaData(
             naming_convention={"ck": "ck_%(table_name)s_%(constraint_name)s",
-                               "type_ck": "type_ck_%(table_name)s_%(column_0_name)s",
+                               "type_ck": "ck_%(table_name)s_%(column_0_name)s",
                                }
         )
         u1 = Table("user", m1, Column("x", Boolean()))
@@ -4792,7 +4796,7 @@ class NamingConventionTest(fixtures.TestBase, AssertsCompiledSQL):
             schema.CreateTable(u1),
             'CREATE TABLE "user" ('
             "x BOOLEAN, "
-            "CONSTRAINT type_ck_user_x CHECK (x IN (0, 1))"
+            "CONSTRAINT ck_user_x CHECK (x IN (0, 1))"
             ")",
         )
 
@@ -4821,9 +4825,7 @@ class NamingConventionTest(fixtures.TestBase, AssertsCompiledSQL):
         # but is hit at compile time
         assert_raises_message(
             exc.InvalidRequestError,
-            r"Naming convention including \%\(constraint_name\)s token "
-            r"requires that constraint is explicitly named."
-            r" Constraint Identifiers: Table- `user`; Column\(s\)- `x`.",
+            r'Naming convention "ck_\%\(table_name\)s_\%\(constraint_name\)s" failed to apply to CHECK constraint on table "user" with column "\[\'x\'\]" since the constraint has no name, and the convention uses the "\%\(constraint_name\)s" token\. Consider using the "type_ck" naming convention for type-bound CHECK constraints so that no name is necessary\.',
             schema.CreateTable(u1).compile,
             dialect=default.DefaultDialect(),
         )
@@ -4833,7 +4835,7 @@ class NamingConventionTest(fixtures.TestBase, AssertsCompiledSQL):
         should use the `ck_` prefix and not the `type_ck`."""
         m1 = MetaData(
             naming_convention={"ck": "ck_%(table_name)s_%(constraint_name)s",
-                               "type_ck": "type_ck_%(table_name)s_%(constraint_name)s",
+                               "type_ck": "ck_%(table_name)s_%(constraint_name)s",
                                }
         )
         u1 = Table("user", m1, Column("x", Enum("a", "b", name="foo")))
@@ -4860,7 +4862,7 @@ class NamingConventionTest(fixtures.TestBase, AssertsCompiledSQL):
         If the `ck_` is missing in the naming_convention, then only the raw
         constraint name is expected to be used."""
         m1 = MetaData(
-            naming_convention={"type_ck": "type_ck_%(table_name)s_%(constraint_name)s",
+            naming_convention={"type_ck": "ck_%(table_name)s_%(constraint_name)s",
                                }
         )
         u1 = Table("user", m1, Column("x", Enum("a", "b", name="foo")))
@@ -4889,7 +4891,7 @@ class NamingConventionTest(fixtures.TestBase, AssertsCompiledSQL):
         """
         m1 = MetaData(
             naming_convention={"ck": "ck_%(table_name)s_%(constraint_name)s",
-                               "type_ck": "type_ck_%(table_name)s_%(column_0_name)s",
+                               "type_ck": "ck_%(table_name)s_%(column_0_name)s",
                                }
         )
         u1 = Table("user", m1, Column("x", Enum("a", "b")))
@@ -4905,7 +4907,7 @@ class NamingConventionTest(fixtures.TestBase, AssertsCompiledSQL):
             schema.CreateTable(u1),
             'CREATE TABLE "user" ('
             "x VARCHAR(1), "
-            "CONSTRAINT type_ck_user_x CHECK (x IN ('a', 'b'))"
+            "CONSTRAINT ck_user_x CHECK (x IN ('a', 'b'))"
             ")",
         )
 
@@ -4934,9 +4936,7 @@ class NamingConventionTest(fixtures.TestBase, AssertsCompiledSQL):
         # but is hit at compile time
         assert_raises_message(
             exc.InvalidRequestError,
-            r"Naming convention including \%\(constraint_name\)s token "
-            r"requires that constraint is explicitly named."
-            r" Constraint Identifiers: Table- `user`; Column\(s\)- `x`.",
+            r'Naming convention "ck_\%\(table_name\)s_\%\(constraint_name\)s" failed to apply to CHECK constraint on table "user" with column "\[\'x\'\]" since the constraint has no name, and the convention uses the "\%\(constraint_name\)s" token\. Consider using the "type_ck" naming convention for type-bound CHECK constraints so that no name is necessary\.',
             schema.CreateTable(u1).compile,
             dialect=default.DefaultDialect(),
         )
@@ -4949,7 +4949,7 @@ class NamingConventionTest(fixtures.TestBase, AssertsCompiledSQL):
         """
         m1 = MetaData(
             naming_convention={"ck": "ck_%(table_name)s_%(constraint_name)s",
-                               "type_ck": "type_ck_%(table_name)s_%(constraint_name)s",
+                               "type_ck": "ck_%(table_name)s_%(column_0_name)s",
                                }
         )
         import enum
@@ -4980,7 +4980,7 @@ class NamingConventionTest(fixtures.TestBase, AssertsCompiledSQL):
         """
         m1 = MetaData(
             naming_convention={"ck": "ck_%(table_name)s_%(constraint_name)s",
-                               "type_ck": "type_ck_%(table_name)s_%(constraint_name)s",
+                               "type_ck": "ck_%(table_name)s_%(column_0_name)s",
                                }
         )
         import enum
@@ -5024,9 +5024,7 @@ class NamingConventionTest(fixtures.TestBase, AssertsCompiledSQL):
 
         assert_raises_message( 
             exc.InvalidRequestError,
-            r"Naming convention requires column 0 for a constraint, "
-            r"however the constraint does not have that number of columns."
-            r" Constraint Identifiers: Table- `user`; Column\(s\)- .",
+            r'Naming convention "ck_\%\(table_name\)s_\%\(column_0_name\)s" requires column 0 for a constraint, however the constraint does not have that number of columns. Check table "user" and column\(s\) "\[\]"',
             Table,
             "user", m1,
             Column("x", Integer),
@@ -5077,8 +5075,7 @@ class NamingConventionTest(fixtures.TestBase, AssertsCompiledSQL):
 
         assert_raises_message(
             exc.InvalidRequestError,
-            r"Naming convention including \%\(constraint_name\)s token "
-            r"requires that constraint is explicitly named.",
+            r'Naming convention "ck_\%\(table_name\)s_\%\(constraint_name\)s" failed to apply to CHECK constraint on table "user" with column "\[\'x\'\]" since the constraint has no name, and the convention uses the "\%\(constraint_name\)s" token. Consider using the "type_ck" naming convention for type-bound CHECK constraints so that no name is necessary. \(Background on this error at: http://sqlalche.me/e/f0f1\)',
             schema.CreateTable(u1).compile,
             dialect=default.DefaultDialect(),
         )

@@ -447,8 +447,8 @@ the :class:`.Index` class or individual :class:`.Constraint` classes as keys,
 and Python string templates as values.   It also accepts a series of
 string-codes as alternative keys, ``"fk"``, ``"pk"``,
 ``"ix"``, ``"ck"``, ``"type_ck"``, ``"uq"`` for foreign key, primary key, index,
-check, type_check, and unique constraint, respectively.  The string templates in
-this dictionary are used whenever a constraint or index is associated with this
+check, "type bound" check, and unique constraint, respectively.  The string templates
+in this dictionary are used whenever a constraint or index is associated with this
 :class:`.MetaData` object that does not have an existing name given (including
 one exception case where an existing name can be further embellished).
 
@@ -458,7 +458,7 @@ An example naming convention that suits basic cases is as follows::
       "ix": 'ix_%(column_0_label)s',
       "uq": "uq_%(table_name)s_%(column_0_name)s",
       "ck": "ck_%(table_name)s_%(constraint_name)s",
-      "type_ck": "type_ck_%(table_name)s_%(column_0_name)s",
+      "type_ck": "ck_%(table_name)s_%(column_0_name)s",
       "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
       "pk": "pk_%(table_name)s"
     }
@@ -679,10 +679,17 @@ structure of the expression will determine which column is noted as
 Some backends do not natively support core SqlAlchemy datatypes like
 :class:`.Boolean` and  :class:`.Enum`, so SqlAlchemy enforces standard
 behaviors by automatically generating a CHECK constraint.  These "Type Bound"
-column types will prefer a ``type_ck`` naming convention when available.
+column types will prefer the specialized ``type_ck`` naming convention when
+available and needed.  The ``type_ck`` prefix is only used for auto-generation; 
+if a constraint name is explicitly provided, the naming convention with a ``ck``
+prefix will be used.  This topic is covered in the next section.
 
 .. versionadded:: 1.0.0 The :class:`.CheckConstraint` object now supports
    the ``column_0_name`` naming convention token.
+
+.. seealso::
+
+ :ref:`_naming_schematypes`
 
 .. _naming_schematypes:
 
@@ -703,21 +710,19 @@ normally by using a convention which includes ``%(constraint_name)s``
 and then applying a name to the type::
 
     metadata = MetaData(
-        naming_convention={"type_ck": "type_ck_%(table_name)s_%(constraint_name)s"}
+        naming_convention={"ck": "ck_%(table_name)s_%(constraint_name)s"}
     )
 
     Table('foo', metadata,
         Column('flag', Boolean(name='flag_bool'))
     )
 
-The above table will produce the constraint name ``type_ck_foo_flag_bool``::
+The above table will produce the constraint name ``ck_foo_flag_bool``::
 
     CREATE TABLE foo (
         flag BOOL,
-        CONSTRAINT type_ck_foo_flag_bool CHECK (flag IN (0, 1))
+        CONSTRAINT ck_foo_flag_bool CHECK (flag IN (0, 1))
     )
-
-Note how the prefix for these constraints is ``type_ck`` and not just ``ck``.
 
 The :class:`.SchemaType` classes use special internal symbols so that
 the naming convention is only determined at DDL compile time.  On PostgreSQL,
@@ -730,32 +735,33 @@ MySQL.
 
 The CHECK constraint may also make use of the ``column_0_name`` token,
 which works nicely with :class:`.SchemaType` since these constraints have
-only one column::
+only one column.  The ``column_0_name`` token is the recommended token when
+dealing with auto-generated "type bound" constraints if you do not want to
+explicitly name them::
 
     metadata = MetaData(
         naming_convention={"ck": "ck_%(table_name)s_%(constraint_name)s",
-                           "type_ck": "type_ck_%(table_name)s_%(column_0_name)s",
+                           "type_ck": "ck_%(table_name)s_%(column_0_name)s",
                            }
     )
 
     Table('foo', metadata,
-        Column('value', Integer),
-        Column('flag', Boolean()),
-        CheckConstraint('value > 5', name='value_gt_5'),
+        Column('flag_explicit', Boolean(name='explicit_flag_constraint')),
+        Column('flag_auto', Boolean()),
     )
 
 The above schema will produce::
 
     CREATE TABLE foo (
-        value INTEGER,
-        flag BOOL,
-        CONSTRAINT ck_foo_value_gt_5 CHECK (value > 5)
-        CONSTRAINT type_ck_foo_flag CHECK (flag IN (0, 1))
+        flag_explicit BOOL,
+        flag_auto BOOL,
+        CONSTRAINT ck_foo_explicit_flag_constraint CHECK (flag_explicit IN (0, 1)),
+        CONSTRAINT ck_foo_flag_auto CHECK (flag_auto IN (0, 1)),
     )
 
 Note how the type-bound :class:`.Boolean` created a contraint name using  the
-"type_ck" naming convention template, while the :class:`.CheckConstraint`
-used the "ck" naming convention template.
+"type_ck" naming convention template when no constraint name was provided, and
+created a constraint with the "ck" naming convention when a name was provided.
 
 .. versionchanged:: 1.3 Introduced the special ``type_ck`` prefix.
 
