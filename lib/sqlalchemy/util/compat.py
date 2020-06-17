@@ -225,9 +225,9 @@ else:
 
     def exec_(func_text, globals_, lcl=None):
         if lcl is None:
-            exec("exec func_text in globals_")
+            exec ("exec func_text in globals_")
         else:
-            exec("exec func_text in globals_, lcl")
+            exec ("exec func_text in globals_, lcl")
 
     def iterbytes(buf):
         return (ord(byte) for byte in buf)
@@ -276,7 +276,7 @@ else:
         else:
             return text
 
-    exec(
+    exec (
         "def raise_(exception, with_traceback=None, replace_context=None, "
         "from_=False):\n"
         "    if with_traceback:\n"

@@ -2294,7 +2294,7 @@ class _Py3KFixtures(object):
 
 if util.py3k:
     _locals = {}
-    exec(
+    exec (
         """
 def _kw_only_fixture(self, a, *, b, c):
     pass

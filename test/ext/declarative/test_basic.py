@@ -2241,5 +2241,5 @@ def _produce_test(inline, stringbased):
 for inline in True, False:
     for stringbased in True, False:
         testclass = _produce_test(inline, stringbased)
-        exec("%s = testclass" % testclass.__name__)
+        exec ("%s = testclass" % testclass.__name__)
         del testclass

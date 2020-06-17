@@ -323,7 +323,7 @@ def _pytest_fn_decorator(target):
     from sqlalchemy.util.compat import inspect_getfullargspec
 
     def _exec_code_in_env(code, env, fn_name):
-        exec(code, env)
+        exec (code, env)
         return env[fn_name]
 
     def decorate(fn, add_positional_parameters=()):

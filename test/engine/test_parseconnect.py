@@ -197,7 +197,7 @@ class DialectImportTest(fixtures.TestBase):
             "oracle",
             "mssql",
         ):
-            exec(
+            exec (
                 "from sqlalchemy.dialects import %s\ndialect = "
                 "%s.dialect()" % (name, name),
                 globals(),

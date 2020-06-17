@@ -661,7 +661,7 @@ class Py3KFunctionInstTest(fixtures.ORMTest):
 
 if util.py3k:
     _locals = {}
-    exec(
+    exec (
         """
 def _kw_only_fixture(self):
     class A(object):

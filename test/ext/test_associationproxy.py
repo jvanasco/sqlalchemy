@@ -821,8 +821,8 @@ class SetTest(_CollectionOperations):
                     p.children = base[:]
                     control = set(base[:])
 
-                    exec("p.children %s other" % op)
-                    exec("control %s other" % op)
+                    exec ("p.children %s other" % op)
+                    exec ("control %s other" % op)
 
                     try:
                         self.assert_(p.children == control)

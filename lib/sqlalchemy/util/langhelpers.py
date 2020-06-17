@@ -168,7 +168,7 @@ def %(name)s(%(args)s):
 
 
 def _exec_code_in_env(code, env, fn_name):
-    exec(code, env)
+    exec (code, env)
     return env[fn_name]
 
 
@@ -209,7 +209,7 @@ def %(name)s(%(args)s):
         % metadata
     )
     env = {"cls": callable_, "symbol": symbol}
-    exec(code, env)
+    exec (code, env)
     decorated = env[location_name]
     if hasattr(fn, "_linked_to"):
         linked_to, linked_to_location = fn._linked_to
@@ -1527,7 +1527,7 @@ NoneType = type(None)
 def attrsetter(attrname):
     code = "def set(obj, value):" "    obj.%s = value" % attrname
     env = locals().copy()
-    exec(code, env)
+    exec (code, env)
     return env["set"]
 
 
