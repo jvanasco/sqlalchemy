@@ -190,12 +190,14 @@ OPERATORS = {
     operators.match_op: " MATCH ",
     operators.notmatch_op: " NOT MATCH ",
     operators.in_op: " IN ",
-    operators.notin_op: " NOT IN ",
+    operators.notin_op: " NOT IN ",  # deprecated 1.4; see #5429
+    operators.not_in_op: " NOT IN ",
     operators.comma_op: ", ",
     operators.from_: " FROM ",
     operators.as_: " AS ",
     operators.is_: " IS ",
-    operators.isnot: " IS NOT ",
+    operators.isnot: " IS NOT ",  # deprecated 1.4; see #5429
+    operators.is_not: " IS NOT ",
     operators.collate: " COLLATE ",
     # unary
     operators.exists: "EXISTS ",

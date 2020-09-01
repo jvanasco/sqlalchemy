@@ -596,7 +596,7 @@ class ColumnOperators(Operators):
         """
         return self.operate(in_op, other)
 
-    def notin_(self, other):
+    def not_in(self, other):
         """implement the ``NOT IN`` operator.
 
         This is equivalent to using negation with
@@ -609,7 +609,7 @@ class ColumnOperators(Operators):
         alter this behavior.
 
         .. versionchanged:: 1.2  The :meth:`.ColumnOperators.in_` and
-           :meth:`.ColumnOperators.notin_` operators
+           :meth:`.ColumnOperators.not_in` operators
            now produce a "static" expression for an empty IN sequence
            by default.
 
@@ -618,7 +618,10 @@ class ColumnOperators(Operators):
             :meth:`.ColumnOperators.in_`
 
         """
-        return self.operate(notin_op, other)
+        return self.operate(not_in_op, other)
+
+    # deprecated 1.4; see #5429
+    notin_ = not_in
 
     def notlike(self, other, escape=None):
         """implement the ``NOT LIKE`` operator.
@@ -654,12 +657,12 @@ class ColumnOperators(Operators):
         usage of ``IS`` may be desirable if comparing to boolean values
         on certain platforms.
 
-        .. seealso:: :meth:`.ColumnOperators.isnot`
+        .. seealso:: :meth:`.ColumnOperators.is_not`
 
         """
         return self.operate(is_, other)
 
-    def isnot(self, other):
+    def is_not(self, other):
         """Implement the ``IS NOT`` operator.
 
         Normally, ``IS NOT`` is generated automatically when comparing to a
@@ -670,7 +673,10 @@ class ColumnOperators(Operators):
         .. seealso:: :meth:`.ColumnOperators.is_`
 
         """
-        return self.operate(isnot, other)
+        return self.operate(is_not, other)
+
+    # deprecated 1.4; see #5429
+    isnot = is_not
 
     def startswith(self, other, **kwargs):
         r"""Implement the ``startswith`` operator.
@@ -1269,8 +1275,12 @@ def is_(a, b):
 
 
 @comparison_op
-def isnot(a, b):
-    return a.isnot(b)
+def is_not(a, b):
+    return a.is_not(b)
+
+
+# 1.4 deprecated; see #5429
+isnot = is_not
 
 
 def collate(a, b):
@@ -1317,8 +1327,12 @@ def in_op(a, b):
 
 
 @comparison_op
-def notin_op(a, b):
-    return a.notin_(b)
+def not_in_op(a, b):
+    return a.not_in(b)
+
+
+# 1.4 deprecated; see #5429
+notin_op = not_in_op
 
 
 def distinct_op(a):
@@ -1529,9 +1543,11 @@ _PRECEDENCE = {
     like_op: 5,
     notlike_op: 5,
     in_op: 5,
-    notin_op: 5,
+    notin_op: 5,  # deprecated 1.4; See #5429
+    not_in_op: 5,
     is_: 5,
-    isnot: 5,
+    isnot: 5,  # deprecated 1.4; See #5429
+    is_not: 5,
     eq: 5,
     ne: 5,
     is_distinct_from: 5,

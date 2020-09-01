@@ -87,7 +87,8 @@ class DefaultColumnComparatorTest(fixtures.TestBase):
     @testing.combinations(
         (operators.add, right_column),
         (operators.is_, None),
-        (operators.isnot, None),
+        (operators.is_not, None),
+        (operators.isnot, None),  # deprecated 1.4; See #5429
         (operators.is_, null()),
         (operators.is_, true()),
         (operators.is_, false()),
@@ -98,15 +99,18 @@ class DefaultColumnComparatorTest(fixtures.TestBase):
         (operators.is_distinct_from, None),
         (operators.isnot_distinct_from, True),
         (operators.is_, True),
-        (operators.isnot, True),
+        (operators.is_not, True),
+        (operators.isnot, True),  # deprecated 1.4; See #5429
         (operators.is_, False),
-        (operators.isnot, False),
+        (operators.is_not, False),
+        (operators.isnot, False),  # deprecated 1.4; See #5429
         (operators.like_op, right_column),
         (operators.notlike_op, right_column),
         (operators.ilike_op, right_column),
         (operators.notilike_op, right_column),
         (operators.is_, right_column),
-        (operators.isnot, right_column),
+        (operators.is_not, right_column),
+        (operators.isnot, right_column),  # deprecated 1.4; See #5429
         (operators.concat_op, right_column),
         id_="ns",
     )
@@ -179,19 +183,22 @@ class DefaultColumnComparatorTest(fixtures.TestBase):
         )
         self._loop_test(operators.in_op, [1, 2, 3])
 
-    def test_notin(self):
+    def test_not_in(self):
         left = column("left")
-        assert left.comparator.operate(operators.notin_op, [1, 2, 3]).compare(
-            BinaryExpression(
-                left,
-                BindParameter(
-                    "left", value=[1, 2, 3], unique=True, expanding=True
-                ),
-                operators.notin_op,
-                type_=sqltypes.BOOLEANTYPE,
+        # legacy deprecated 1.4; see Issue#5429
+        # _operators_test = (modern, legacy)
+        for _op in (operators.not_in_op, operators.notin_op):
+            assert left.comparator.operate(_op, [1, 2, 3]).compare(
+                BinaryExpression(
+                    left,
+                    BindParameter(
+                        "left", value=[1, 2, 3], unique=True, expanding=True
+                    ),
+                    _op,
+                    type_=sqltypes.BOOLEANTYPE,
+                )
             )
-        )
-        self._loop_test(operators.notin_op, [1, 2, 3])
+            self._loop_test(_op, [1, 2, 3])
 
     def test_in_no_accept_list_of_non_column_element(self):
         left = column("left")
