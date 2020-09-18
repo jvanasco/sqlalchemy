@@ -1267,7 +1267,7 @@ without any subqueries generated::
                     ).filter(
                         or_(
                             Engineer.primary_language == 'python',
-                            Manager.manager_name == 'dilbert'
+                            Manager.manager_name == 'ripley'
                         )
                     )
 

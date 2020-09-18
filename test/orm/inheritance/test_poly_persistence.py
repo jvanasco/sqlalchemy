@@ -175,7 +175,7 @@ class InsertOrderTest(PolymorphTest):
                 status="BBA",
                 engineer_name="engineer1",
                 primary_language="java",
-                name="dilbert",
+                name="ripley",
             )
         )
         c.employees.append(Person(status="HHH", name="joesmith"))
@@ -339,7 +339,7 @@ class RoundTripTest(PolymorphTest):
                 status="BBA",
                 engineer_name="engineer1",
                 primary_language="java",
-                **{person_attribute_name: "dilbert"}
+                **{person_attribute_name: "ripley"}
             ),
         ]
         if include_base:
@@ -366,19 +366,19 @@ class RoundTripTest(PolymorphTest):
         session.commit()
 
     @testing.fixture
-    def get_dilbert(self):
+    def get_ripley(self):
         def run(session):
             if self.redefine_colprop:
                 person_attribute_name = "person_name"
             else:
                 person_attribute_name = "name"
 
-            dilbert = (
+            ripley = (
                 session.query(Engineer)
-                .filter_by(**{person_attribute_name: "dilbert"})
+                .filter_by(**{person_attribute_name: "ripley"})
                 .one()
             )
-            return dilbert
+            return ripley
 
         return run
 
@@ -393,22 +393,22 @@ class RoundTripTest(PolymorphTest):
 
         session = create_session()
 
-        dilbert = (
+        ripley = (
             session.query(Engineer)
-            .filter_by(**{person_attribute_name: "dilbert"})
+            .filter_by(**{person_attribute_name: "ripley"})
             .one()
         )
         employees = session.query(Person).order_by(Person.person_id).all()
         company = session.query(Company).first()
 
-        eq_(session.get(Person, dilbert.person_id), dilbert)
+        eq_(session.get(Person, ripley.person_id), ripley)
         session.expunge_all()
 
         eq_(
             session.query(Person)
-            .filter(Person.person_id == dilbert.person_id)
+            .filter(Person.person_id == ripley.person_id)
             .one(),
-            dilbert,
+            ripley,
         )
         session.expunge_all()
 
@@ -428,9 +428,9 @@ class RoundTripTest(PolymorphTest):
             else:
                 self.assert_sql_count(testing.db, go, 3)
 
-    def test_baseclass_lookup(self, get_dilbert):
+    def test_baseclass_lookup(self, get_ripley):
         session = Session()
-        dilbert = get_dilbert(session)
+        ripley = get_ripley(session)
 
         if self.redefine_colprop:
             person_attribute_name = "person_name"
@@ -443,14 +443,14 @@ class RoundTripTest(PolymorphTest):
         # the "people" selectable should be adapted to be "person_join"
         eq_(
             session.query(Person)
-            .filter(getattr(Person, person_attribute_name) == "dilbert")
+            .filter(getattr(Person, person_attribute_name) == "ripley")
             .first(),
-            dilbert,
+            ripley,
         )
 
-    def test_subclass_lookup(self, get_dilbert):
+    def test_subclass_lookup(self, get_ripley):
         session = Session()
-        dilbert = get_dilbert(session)
+        ripley = get_ripley(session)
 
         if self.redefine_colprop:
             person_attribute_name = "person_name"
@@ -459,55 +459,55 @@ class RoundTripTest(PolymorphTest):
 
         eq_(
             session.query(Engineer)
-            .filter(getattr(Person, person_attribute_name) == "dilbert")
+            .filter(getattr(Person, person_attribute_name) == "ripley")
             .first(),
-            dilbert,
+            ripley,
         )
 
-    def test_baseclass_base_alias_filter(self, get_dilbert):
+    def test_baseclass_base_alias_filter(self, get_ripley):
         session = Session()
-        dilbert = get_dilbert(session)
+        ripley = get_ripley(session)
 
         # test selecting from the query, joining against
         # an alias of the base "people" table.  test that
         # the "palias" alias does *not* get sucked up
         # into the "person_join" conversion.
         palias = people.alias("palias")
-        dilbert = session.get(Person, dilbert.person_id)
+        ripley = session.get(Person, ripley.person_id)
         is_(
-            dilbert,
+            ripley,
             session.query(Person)
             .filter(
-                (palias.c.name == "dilbert")
+                (palias.c.name == "ripley")
                 & (palias.c.person_id == Person.person_id)
             )
             .first(),
         )
 
-    def test_subclass_base_alias_filter(self, get_dilbert):
+    def test_subclass_base_alias_filter(self, get_ripley):
         session = Session()
-        dilbert = get_dilbert(session)
+        ripley = get_ripley(session)
 
         palias = people.alias("palias")
 
         is_(
-            dilbert,
+            ripley,
             session.query(Engineer)
             .filter(
-                (palias.c.name == "dilbert")
+                (palias.c.name == "ripley")
                 & (palias.c.person_id == Person.person_id)
             )
             .first(),
         )
 
-    def test_baseclass_sub_table_filter(self, get_dilbert):
+    def test_baseclass_sub_table_filter(self, get_ripley):
         session = Session()
-        dilbert = get_dilbert(session)
+        ripley = get_ripley(session)
 
         # this unusual test is selecting from the plain people/engineers
         # table at the same time as the polymorphic entity
         is_(
-            dilbert,
+            ripley,
             session.query(Person)
             .filter(
                 (Engineer.engineer_name == "engineer1")
@@ -517,12 +517,12 @@ class RoundTripTest(PolymorphTest):
             .first(),
         )
 
-    def test_subclass_getitem(self, get_dilbert):
+    def test_subclass_getitem(self, get_ripley):
         session = Session()
-        dilbert = get_dilbert(session)
+        ripley = get_ripley(session)
 
         is_(
-            dilbert,
+            ripley,
             session.query(Engineer).filter(
                 Engineer.engineer_name == "engineer1"
             )[0],
@@ -537,9 +537,9 @@ class RoundTripTest(PolymorphTest):
         else:
             person_attribute_name = "name"
 
-        dilbert = (  # noqa
+        ripley = (  # noqa
             session.query(Person)
-            .filter(getattr(Person, person_attribute_name) == "dilbert")
+            .filter(getattr(Person, person_attribute_name) == "ripley")
             .first()
         )
 
@@ -548,7 +548,7 @@ class RoundTripTest(PolymorphTest):
             # already-present-in-session
             (
                 session.query(Person)
-                .filter(getattr(Person, person_attribute_name) == "dilbert")
+                .filter(getattr(Person, person_attribute_name) == "ripley")
                 .first()
             )
 

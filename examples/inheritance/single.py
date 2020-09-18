@@ -104,7 +104,7 @@ c = Company(
             name="pointy haired boss", status="AAB", manager_name="manager1"
         ),
         Engineer(
-            name="dilbert",
+            name="ripley",
             status="BBA",
             engineer_name="engineer1",
             primary_language="java",
@@ -127,15 +127,15 @@ c = session.query(Company).get(1)
 for e in c.employees:
     print(e, inspect(e).key, e.company)
 assert set([e.name for e in c.employees]) == set(
-    ["pointy haired boss", "dilbert", "joesmith", "wally", "jsmith"]
+    ["pointy haired boss", "ripley", "joesmith", "wally", "jsmith"]
 )
 print("\n")
 
-dilbert = session.query(Person).filter_by(name="dilbert").one()
-dilbert2 = session.query(Engineer).filter_by(name="dilbert").one()
-assert dilbert is dilbert2
+ripley = session.query(Person).filter_by(name="ripley").one()
+ripley2 = session.query(Engineer).filter_by(name="ripley").one()
+assert ripley is ripley2
 
-dilbert.engineer_name = "hes dilbert!"
+ripley.engineer_name = "hes ripley!"
 
 session.commit()
 

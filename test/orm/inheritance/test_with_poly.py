@@ -61,12 +61,12 @@ class _WithPolymorphicBase(_PolymorphicFixtureBase):
             .filter(
                 or_(
                     pa.Engineer.primary_language == "java",
-                    pa.Manager.manager_name == "dogbert",
+                    pa.Manager.manager_name == "bishop",
                 )
             )
             .order_by(pa.Engineer.type)
             .all(),
-            [("dilbert", "java", None), ("dogbert", None, "dogbert")],
+            [("ripley", "java", None), ("bishop", None, "bishop")],
         )
 
     def test_join_to_join_entities(self):
@@ -93,8 +93,8 @@ class _WithPolymorphicBase(_PolymorphicFixtureBase):
                 .order_by(pa.name, pa_alias.name)
             ],
             [
-                ("dilbert", Engineer, "dilbert", Engineer),
-                ("dogbert", Manager, "pointy haired boss", Boss),
+                ("ripley", Engineer, "ripley", Engineer),
+                ("bishop", Manager, "pointy haired boss", Boss),
                 ("vlad", Engineer, "vlad", Engineer),
                 ("wally", Engineer, "wally", Engineer),
             ],
@@ -129,8 +129,8 @@ class _WithPolymorphicBase(_PolymorphicFixtureBase):
                 .order_by(pa.name, pa_alias.name)
             ],
             [
-                ("dilbert", "java", "dilbert", "java"),
-                ("dogbert", None, "pointy haired boss", None),
+                ("ripley", "java", "ripley", "java"),
+                ("bishop", None, "pointy haired boss", None),
                 ("vlad", "cobol", "vlad", "cobol"),
                 ("wally", "c++", "wally", "c++"),
             ],

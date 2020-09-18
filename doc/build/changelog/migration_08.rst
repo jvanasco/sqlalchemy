@@ -550,7 +550,7 @@ given ``Engineer`` as a joined subclass of ``Person``:
 
     query(Engineer).\
             filter(Person.id==Engineer.id).\
-            filter(Person.name=='dilbert').\
+            filter(Person.name=='ripley').\
             update({"engineer_data":"java"})
 
 would produce:
@@ -558,7 +558,7 @@ would produce:
 ::
 
     UPDATE engineer SET engineer_data='java' FROM person
-    WHERE person.id=engineer.id AND person.name='dilbert'
+    WHERE person.id=engineer.id AND person.name='ripley'
 
 :ticket:`2365`
 

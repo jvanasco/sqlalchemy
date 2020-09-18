@@ -140,16 +140,16 @@ class DeclarativeInheritanceTest(DeclarativeTestBase):
         Base.metadata.create_all()
         sess = create_session()
         c1 = Company(
-            name="MegaCorp, Inc.",
+            name="Yoyodyne, Inc.",
             employees=[
-                Engineer(name="dilbert", primary_language="java"),
+                Engineer(name="ripley", primary_language="java"),
                 Engineer(name="wally", primary_language="c++"),
-                Manager(name="dogbert", golf_swing="fore!"),
+                Manager(name="bishop", golf_swing="fore!"),
             ],
         )
 
         c2 = Company(
-            name="Elbonia, Inc.",
+            name="Weyland-Utani Corporation",
             employees=[Engineer(name="vlad", primary_language="cobol")],
         )
         sess.add(c1)
@@ -185,7 +185,7 @@ class DeclarativeInheritanceTest(DeclarativeTestBase):
 
         def go():
             assert (
-                sess.query(Manager).filter(Manager.name == "dogbert").one().id
+                sess.query(Manager).filter(Manager.name == "bishop").one().id
             )
 
         self.assert_sql_count(testing.db, go, 1)
@@ -193,7 +193,7 @@ class DeclarativeInheritanceTest(DeclarativeTestBase):
 
         def go():
             assert (
-                sess.query(Person).filter(Manager.name == "dogbert").one().id
+                sess.query(Person).filter(Manager.name == "bishop").one().id
             )
 
         self.assert_sql_count(testing.db, go, 1)
@@ -220,13 +220,13 @@ class DeclarativeInheritanceTest(DeclarativeTestBase):
         Engineer.primary_language = Column("primary_language", String(50))
         Base.metadata.create_all()
         sess = create_session()
-        e1 = Engineer(primary_language="java", name="dilbert")
+        e1 = Engineer(primary_language="java", name="ripley")
         sess.add(e1)
         sess.flush()
         sess.expunge_all()
         eq_(
             sess.query(Person).first(),
-            Engineer(primary_language="java", name="dilbert"),
+            Engineer(primary_language="java", name="ripley"),
         )
 
     def test_add_parentcol_after_the_fact(self):
@@ -251,13 +251,13 @@ class DeclarativeInheritanceTest(DeclarativeTestBase):
         Person.name = Column("name", String(50))
         Base.metadata.create_all()
         sess = create_session()
-        e1 = Engineer(primary_language="java", name="dilbert")
+        e1 = Engineer(primary_language="java", name="ripley")
         sess.add(e1)
         sess.flush()
         sess.expunge_all()
         eq_(
             sess.query(Person).first(),
-            Engineer(primary_language="java", name="dilbert"),
+            Engineer(primary_language="java", name="ripley"),
         )
 
     def test_add_sub_parentcol_after_the_fact(self):
@@ -291,13 +291,13 @@ class DeclarativeInheritanceTest(DeclarativeTestBase):
         Person.name = Column("name", String(50))
         Base.metadata.create_all()
         sess = create_session()
-        e1 = Admin(primary_language="java", name="dilbert", workstation="foo")
+        e1 = Admin(primary_language="java", name="ripley", workstation="foo")
         sess.add(e1)
         sess.flush()
         sess.expunge_all()
         eq_(
             sess.query(Person).first(),
-            Admin(primary_language="java", name="dilbert", workstation="foo"),
+            Admin(primary_language="java", name="ripley", workstation="foo"),
         )
 
     def test_subclass_mixin(self):
@@ -534,16 +534,16 @@ class DeclarativeInheritanceTest(DeclarativeTestBase):
         Base.metadata.create_all()
         sess = create_session()
         c1 = Company(
-            name="MegaCorp, Inc.",
+            name="Yoyodyne, Inc.",
             employees=[
-                Engineer(name="dilbert", primary_language="java"),
+                Engineer(name="ripley", primary_language="java"),
                 Engineer(name="wally", primary_language="c++"),
-                Manager(name="dogbert", golf_swing="fore!"),
+                Manager(name="bishop", golf_swing="fore!"),
             ],
         )
 
         c2 = Company(
-            name="Elbonia, Inc.",
+            name="Weyland-Utani Corporation",
             employees=[Engineer(name="vlad", primary_language="cobol")],
         )
         sess.add(c1)
@@ -623,12 +623,12 @@ class DeclarativeInheritanceTest(DeclarativeTestBase):
         assert not hasattr(Manager, "primary_language")
         Base.metadata.create_all()
         sess = create_session()
-        e1 = Engineer(name="dilbert", primary_language="java")
+        e1 = Engineer(name="ripley", primary_language="java")
         e2 = Engineer(name="wally", primary_language="c++")
-        m1 = Manager(name="dogbert", golf_swing="fore!")
-        c1 = Company(name="MegaCorp, Inc.", employees=[e1, e2, m1])
+        m1 = Manager(name="bishop", golf_swing="fore!")
+        c1 = Company(name="Yoyodyne, Inc.", employees=[e1, e2, m1])
         e3 = Engineer(name="vlad", primary_language="cobol")
-        c2 = Company(name="Elbonia, Inc.", employees=[e3])
+        c2 = Company(name="Weyland-Utani Corporation", employees=[e3])
         sess.add(c1)
         sess.add(c2)
         sess.flush()
@@ -961,12 +961,12 @@ class DeclarativeInheritanceTest(DeclarativeTestBase):
         assert not hasattr(Manager, "primary_language")
         Base.metadata.create_all()
         sess = create_session()
-        e1 = Engineer(name="dilbert", primary_language="java")
+        e1 = Engineer(name="ripley", primary_language="java")
         e2 = Engineer(name="wally", primary_language="c++")
-        m1 = Manager(name="dogbert", golf_swing="fore!")
-        c1 = Company(name="MegaCorp, Inc.", employees=[e1, e2, m1])
+        m1 = Manager(name="bishop", golf_swing="fore!")
+        c1 = Company(name="Yoyodyne, Inc.", employees=[e1, e2, m1])
         e3 = Engineer(name="vlad", primary_language="cobol")
-        c2 = Company(name="Elbonia, Inc.", employees=[e3])
+        c2 = Company(name="Weyland-Utani Corporation", employees=[e3])
         sess.add(c1)
         sess.add(c2)
         sess.flush()
@@ -1094,7 +1094,7 @@ class DeclarativeInheritanceTest(DeclarativeTestBase):
             Language(name="cpp"),
             Language(name="cobol"),
         )
-        e1 = Engineer(name="dilbert", primary_language=java)
+        e1 = Engineer(name="ripley", primary_language=java)
         e2 = Engineer(name="wally", primary_language=cpp)
         e3 = Engineer(name="vlad", primary_language=cobol)
         sess.add_all([e1, e2, e3])
@@ -1121,7 +1121,7 @@ class DeclarativeInheritanceTest(DeclarativeTestBase):
                 Engineer(name="vlad", primary_language=Language(name="cobol")),
                 Engineer(name="wally", primary_language=Language(name="cpp")),
                 Engineer(
-                    name="dilbert", primary_language=Language(name="java")
+                    name="ripley", primary_language=Language(name="java")
                 ),
             ],
         )

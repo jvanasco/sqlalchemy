@@ -842,7 +842,7 @@ using with_polymorphic::
                 .filter(
                     sess.query(Company.name).
                     filter(Company.company_id == Person.company_id).
-                    correlate(Person).as_scalar() == "Elbonia, Inc.")
+                    correlate(Person).as_scalar() == "Weyland-Utani Corporation")
 
 The above query now produces::
 
@@ -882,7 +882,7 @@ from it first::
                 .filter(
                     sess.query(Company.name).
                     filter(Company.company_id == paliased.company_id).
-                    correlate(paliased).as_scalar() == "Elbonia, Inc.")
+                    correlate(paliased).as_scalar() == "Weyland-Utani Corporation")
 
 The :func:`.aliased` construct guarantees that the "polymorphic selectable"
 is wrapped in a subquery.  By referring to it explicitly in the correlated

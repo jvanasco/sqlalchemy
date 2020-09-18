@@ -51,9 +51,9 @@ class ConcreteInhTest(
     ):
         Base.metadata.create_all()
         sess = create_session()
-        e1 = Engineer(name="dilbert", primary_language="java")
+        e1 = Engineer(name="ripley", primary_language="java")
         e2 = Engineer(name="wally", primary_language="c++")
-        m1 = Manager(name="dogbert", golf_swing="fore!")
+        m1 = Manager(name="bishop", golf_swing="fore!")
         e3 = Engineer(name="vlad", primary_language="cobol")
         b1 = Boss(name="pointy haired")
 
@@ -82,8 +82,8 @@ class ConcreteInhTest(
             eq_(
                 sess.query(Employee).order_by(Employee.name).all(),
                 [
-                    Engineer(name="dilbert"),
-                    Manager(name="dogbert"),
+                    Engineer(name="ripley"),
+                    Manager(name="bishop"),
                     Boss(name="pointy haired"),
                     Engineer(name="vlad"),
                     Engineer(name="wally"),
@@ -93,17 +93,17 @@ class ConcreteInhTest(
             eq_(
                 sess.query(Engineer).order_by(Engineer.name).all(),
                 [
-                    Engineer(name="dilbert"),
+                    Engineer(name="ripley"),
                     Engineer(name="vlad"),
                     Engineer(name="wally"),
                 ],
             )
-            eq_(sess.query(Manager).all(), [Manager(name="dogbert")])
+            eq_(sess.query(Manager).all(), [Manager(name="bishop")])
             eq_(sess.query(Boss).all(), [Boss(name="pointy haired")])
 
         e1 = sess.query(Engineer).order_by(Engineer.name).first()
         sess.expire(e1)
-        eq_(e1.name, "dilbert")
+        eq_(e1.name, "ripley")
 
     def test_explicit(self):
         engineers = Table(

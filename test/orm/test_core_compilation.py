@@ -705,8 +705,8 @@ class ExplicitWithPolymorhpicTest(
 
         stmt = select(subq1).where(
             or_(
-                subq1.c.engineer_name == "dilbert",
-                subq1.c.manager_name == "dogbert",
+                subq1.c.engineer_name == "ripley",
+                subq1.c.manager_name == "bishop",
             )
         )
 

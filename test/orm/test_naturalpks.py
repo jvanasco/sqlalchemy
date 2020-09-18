@@ -1619,7 +1619,7 @@ class JoinedInheritanceTest(fixtures.MappedTest):
         self._mapping_fixture(False, passive_updates)
         sess = sa.orm.sessionmaker()()
 
-        e1 = Engineer(name="dilbert", primary_language="java")
+        e1 = Engineer(name="ripley", primary_language="java")
         sess.add(e1)
         sess.commit()
         e1.name = "wally"
@@ -1633,13 +1633,13 @@ class JoinedInheritanceTest(fixtures.MappedTest):
 
         eq_(e1.name, "wally")
 
-        e1.name = "dogbert"
+        e1.name = "bishop"
         sess.commit()
-        eq_(e1.name, "dogbert")
+        eq_(e1.name, "bishop")
 
         eq_(
             sess.execute(self.tables.engineer.select()).fetchall(),
-            [("dogbert", "c++", None)],
+            [("bishop", "c++", None)],
         )
 
     def _test_fk(self, passive_updates):
@@ -1649,22 +1649,22 @@ class JoinedInheritanceTest(fixtures.MappedTest):
 
         sess = sa.orm.sessionmaker()()
 
-        m1 = Manager(name="dogbert", paperwork="lots")
+        m1 = Manager(name="bishop", paperwork="lots")
         e1, e2 = (
-            Engineer(name="dilbert", primary_language="java", boss=m1),
+            Engineer(name="ripley", primary_language="java", boss=m1),
             Engineer(name="wally", primary_language="c++", boss=m1),
         )
         sess.add_all([e1, e2, m1])
         sess.commit()
 
-        eq_(e1.boss_name, "dogbert")
-        eq_(e2.boss_name, "dogbert")
+        eq_(e1.boss_name, "bishop")
+        eq_(e2.boss_name, "bishop")
 
         eq_(
             sess.execute(
                 self.tables.engineer.select().order_by(Engineer.name)
             ).fetchall(),
-            [("dilbert", "java", "dogbert"), ("wally", "c++", "dogbert")],
+            [("ripley", "java", "bishop"), ("wally", "c++", "bishop")],
         )
 
         sess.expire_all()
@@ -1682,7 +1682,7 @@ class JoinedInheritanceTest(fixtures.MappedTest):
                 self.tables.engineer.select().order_by(Engineer.name)
             ).fetchall(),
             [
-                ("dilbert", "scala", "pointy haired"),
+                ("ripley", "scala", "pointy haired"),
                 ("wally", "cobol", "pointy haired"),
             ],
         )
@@ -1694,7 +1694,7 @@ class JoinedInheritanceTest(fixtures.MappedTest):
 
         sess = sa.orm.sessionmaker()()
 
-        o1 = Owner(name="dogbert", owner_name="dog")
+        o1 = Owner(name="bishop", owner_name="dog")
         sess.add(o1)
         sess.commit()
         o1.name = "pointy haired"
@@ -1712,18 +1712,18 @@ class JoinedInheritanceTest(fixtures.MappedTest):
 
         eq_(o1.name, "pointy haired")
 
-        o1.name = "catbert"
+        o1.name = "hicks"
         sess.commit()
 
-        eq_(o1.name, "catbert")
+        eq_(o1.name, "hicks")
 
         eq_(
             sess.execute(self.tables.manager.select()).fetchall(),
-            [("catbert", None)],
+            [("hicks", None)],
         )
         eq_(
             sess.execute(self.tables.owner.select()).fetchall(),
-            [("catbert", "pointy")],
+            [("hicks", "pointy")],
         )
 
     def _test_fk_threelevel(self, passive_updates):
@@ -1732,16 +1732,16 @@ class JoinedInheritanceTest(fixtures.MappedTest):
 
         sess = sa.orm.sessionmaker()()
 
-        m1 = Owner(name="dogbert", paperwork="lots", owner_name="dog")
+        m1 = Owner(name="bishop", paperwork="lots", owner_name="dog")
         e1, e2 = (
-            Engineer(name="dilbert", primary_language="java", boss=m1),
+            Engineer(name="ripley", primary_language="java", boss=m1),
             Engineer(name="wally", primary_language="c++", boss=m1),
         )
         sess.add_all([e1, e2, m1])
         sess.commit()
 
-        eq_(e1.boss_name, "dogbert")
-        eq_(e2.boss_name, "dogbert")
+        eq_(e1.boss_name, "bishop")
+        eq_(e2.boss_name, "bishop")
         sess.expire_all()
 
         m1.name = "pointy haired"
@@ -1897,7 +1897,7 @@ class JoinedInheritancePKOnFKTest(fixtures.MappedTest):
 
         sess = sa.orm.sessionmaker()()
 
-        e1 = Engineer(name="dilbert", primary_language="java")
+        e1 = Engineer(name="ripley", primary_language="java")
         sess.add(e1)
         sess.commit()
         e1.name = "wally"

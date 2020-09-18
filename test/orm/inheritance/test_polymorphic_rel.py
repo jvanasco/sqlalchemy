@@ -171,14 +171,14 @@ class _PolymorphicTestBase(object):
         sess = create_session()
         eq_(
             sess.get(Person, e1.person_id),
-            Engineer(name="dilbert", primary_language="java"),
+            Engineer(name="ripley", primary_language="java"),
         )
 
     def test_get_two(self):
         sess = create_session()
         eq_(
             sess.get(Engineer, e1.person_id),
-            Engineer(name="dilbert", primary_language="java"),
+            Engineer(name="ripley", primary_language="java"),
         )
 
     def test_get_three(self):
@@ -197,7 +197,7 @@ class _PolymorphicTestBase(object):
             .join(Person, Company.employees)
             .join(e, c.employees)
             .filter(Person.person_id != e.person_id)
-            .filter(Person.name == "dilbert")
+            .filter(Person.name == "ripley")
             .filter(e.name == "wally")
         )
         eq_(q.count(), 1)
@@ -205,17 +205,17 @@ class _PolymorphicTestBase(object):
             q.all(),
             [
                 (
-                    Company(company_id=1, name="MegaCorp, Inc."),
+                    Company(company_id=1, name="Yoyodyne, Inc."),
                     Engineer(
                         status="regular engineer",
-                        engineer_name="dilbert",
-                        name="dilbert",
+                        engineer_name="ripley",
+                        name="ripley",
                         company_id=1,
                         primary_language="java",
                         person_id=1,
                         type="engineer",
                     ),
-                    Company(company_id=1, name="MegaCorp, Inc."),
+                    Company(company_id=1, name="Yoyodyne, Inc."),
                     Engineer(
                         status="regular engineer",
                         engineer_name="wally",
@@ -239,7 +239,7 @@ class _PolymorphicTestBase(object):
             .join(Person, Company.employees)
             .join(e, c.employees)
             .filter(Person.person_id != e.person_id)
-            .filter(Person.name == "dilbert")
+            .filter(Person.name == "ripley")
             .filter(e.name == "wally")
         )
 
@@ -254,17 +254,17 @@ class _PolymorphicTestBase(object):
             sess.execute(q).all(),
             [
                 (
-                    Company(company_id=1, name="MegaCorp, Inc."),
+                    Company(company_id=1, name="Yoyodyne, Inc."),
                     Engineer(
                         status="regular engineer",
-                        engineer_name="dilbert",
-                        name="dilbert",
+                        engineer_name="ripley",
+                        name="ripley",
                         company_id=1,
                         primary_language="java",
                         person_id=1,
                         type="engineer",
                     ),
-                    Company(company_id=1, name="MegaCorp, Inc."),
+                    Company(company_id=1, name="Yoyodyne, Inc."),
                     Engineer(
                         status="regular engineer",
                         engineer_name="wally",
@@ -280,17 +280,17 @@ class _PolymorphicTestBase(object):
 
     def test_filter_on_subclass_one(self):
         sess = create_session()
-        eq_(sess.query(Engineer).all()[0], Engineer(name="dilbert"))
+        eq_(sess.query(Engineer).all()[0], Engineer(name="ripley"))
 
     def test_filter_on_subclass_one_future(self):
         sess = create_session(future=True)
         eq_(
-            sess.execute(select(Engineer)).scalar(), Engineer(name="dilbert"),
+            sess.execute(select(Engineer)).scalar(), Engineer(name="ripley"),
         )
 
     def test_filter_on_subclass_two(self):
         sess = create_session()
-        eq_(sess.query(Engineer).first(), Engineer(name="dilbert"))
+        eq_(sess.query(Engineer).first(), Engineer(name="ripley"))
 
     def test_filter_on_subclass_three(self):
         sess = create_session()
@@ -298,7 +298,7 @@ class _PolymorphicTestBase(object):
             sess.query(Engineer)
             .filter(Engineer.person_id == e1.person_id)
             .first(),
-            Engineer(name="dilbert"),
+            Engineer(name="ripley"),
         )
 
     def test_filter_on_subclass_four(self):
@@ -307,7 +307,7 @@ class _PolymorphicTestBase(object):
             sess.query(Manager)
             .filter(Manager.person_id == m1.person_id)
             .one(),
-            Manager(name="dogbert"),
+            Manager(name="bishop"),
         )
 
     def test_filter_on_subclass_five(self):
@@ -645,7 +645,7 @@ class _PolymorphicTestBase(object):
         eq_(
             sess.query(Company)
             .join("employees", aliased=True)
-            .filter(Person.name == "dilbert")
+            .filter(Person.name == "ripley")
             .filter(any_)
             .all(),
             [c1],
@@ -660,7 +660,7 @@ class _PolymorphicTestBase(object):
         eq_(
             sess.query(Company)
             .join(ea, Company.employees)
-            .filter(ea.name == "dilbert")
+            .filter(ea.name == "ripley")
             .filter(any_)
             .all(),
             [c1],
@@ -673,7 +673,7 @@ class _PolymorphicTestBase(object):
         eq_(
             sess.query(Company)
             .join(ea, Company.employees)
-            .filter(ea.name == "dilbert")
+            .filter(ea.name == "ripley")
             .filter(any_)
             .all(),
             [],
@@ -698,12 +698,12 @@ class _PolymorphicTestBase(object):
     def test_join_from_columns_or_subclass_one(self):
         sess = create_session()
 
-        expected = [("dogbert",), ("pointy haired boss",)]
+        expected = [("bishop",), ("pointy haired boss",)]
         eq_(sess.query(Manager.name).order_by(Manager.name).all(), expected)
 
     def test_join_from_columns_or_subclass_two(self):
         sess = create_session()
-        expected = [("dogbert",), ("dogbert",), ("pointy haired boss",)]
+        expected = [("bishop",), ("bishop",), ("pointy haired boss",)]
         eq_(
             sess.query(Manager.name)
             .join(Paperwork, Manager.paperwork)
@@ -715,10 +715,10 @@ class _PolymorphicTestBase(object):
     def test_join_from_columns_or_subclass_three(self):
         sess = create_session()
         expected = [
-            ("dilbert",),
-            ("dilbert",),
-            ("dogbert",),
-            ("dogbert",),
+            ("ripley",),
+            ("ripley",),
+            ("bishop",),
+            ("bishop",),
             ("pointy haired boss",),
             ("vlad",),
             ("wally",),
@@ -737,10 +737,10 @@ class _PolymorphicTestBase(object):
         # Load Person.name, joining from Person -> paperwork, get all
         # the people.
         expected = [
-            ("dilbert",),
-            ("dilbert",),
-            ("dogbert",),
-            ("dogbert",),
+            ("ripley",),
+            ("ripley",),
+            ("bishop",),
+            ("bishop",),
             ("pointy haired boss",),
             ("vlad",),
             ("wally",),
@@ -757,7 +757,7 @@ class _PolymorphicTestBase(object):
     def test_join_from_columns_or_subclass_five(self):
         sess = create_session()
         # same, on manager.  get only managers.
-        expected = [("dogbert",), ("dogbert",), ("pointy haired boss",)]
+        expected = [("bishop",), ("bishop",), ("pointy haired boss",)]
         eq_(
             sess.query(Manager.name)
             .join(paperwork, Manager.person_id == paperwork.c.person_id)
@@ -783,10 +783,10 @@ class _PolymorphicTestBase(object):
             # here, it joins to the full result set.  This is 0.6's
             # behavior and is more or less wrong.
             expected = [
-                ("dilbert",),
-                ("dilbert",),
-                ("dogbert",),
-                ("dogbert",),
+                ("ripley",),
+                ("ripley",),
+                ("bishop",),
+                ("bishop",),
                 ("pointy haired boss",),
                 ("vlad",),
                 ("wally",),
@@ -802,7 +802,7 @@ class _PolymorphicTestBase(object):
         else:
             # when a join is present and managers.person_id is available,
             # you get the managers.
-            expected = [("dogbert",), ("dogbert",), ("pointy haired boss",)]
+            expected = [("bishop",), ("bishop",), ("pointy haired boss",)]
             eq_(
                 sess.query(Person.name)
                 .join(paperwork, Manager.person_id == paperwork.c.person_id)
@@ -823,7 +823,7 @@ class _PolymorphicTestBase(object):
 
     def test_join_from_columns_or_subclass_eight(self):
         sess = create_session()
-        expected = [("dogbert",), ("dogbert",), ("pointy haired boss",)]
+        expected = [("bishop",), ("bishop",), ("pointy haired boss",)]
         eq_(
             sess.query(Manager.name)
             .join(paperwork, Manager.person_id == paperwork.c.person_id)
@@ -846,8 +846,8 @@ class _PolymorphicTestBase(object):
         sess = create_session()
         expected = [
             ("pointy haired boss", "review #1"),
-            ("dogbert", "review #2"),
-            ("dogbert", "review #3"),
+            ("bishop", "review #2"),
+            ("bishop", "review #3"),
         ]
         eq_(
             sess.query(Manager.name, Paperwork.description)
@@ -859,7 +859,7 @@ class _PolymorphicTestBase(object):
 
     def test_join_from_columns_or_subclass_eleven(self):
         sess = create_session()
-        expected = [("pointy haired boss",), ("dogbert",), ("dogbert",)]
+        expected = [("pointy haired boss",), ("bishop",), ("bishop",)]
         malias = aliased(Manager)
         eq_(
             sess.query(malias.name)
@@ -870,13 +870,13 @@ class _PolymorphicTestBase(object):
 
     def test_subclass_option_pathing(self):
         sess = create_session()
-        dilbert = (
+        ripley = (
             sess.query(Person)
             .options(defaultload(Engineer.machines).defer(Machine.name))
-            .filter(Person.name == "dilbert")
+            .filter(Person.name == "ripley")
             .first()
         )
-        m = dilbert.machines[0]
+        m = ripley.machines[0]
         assert "name" not in m.__dict__
         eq_(m.name, "IBM ThinkPad")
 
@@ -888,7 +888,7 @@ class _PolymorphicTestBase(object):
 
         sess = create_session()
 
-        name = "dogbert"
+        name = "bishop"
         m1 = sess.query(Manager).filter(Manager.name == name).one()
         sess.expire(m1)
         assert m1.status == "regular manager"
@@ -1074,8 +1074,8 @@ class _PolymorphicTestBase(object):
         sess = create_session()
         expected = [
             Engineer(
-                name="dilbert",
-                engineer_name="dilbert",
+                name="ripley",
+                engineer_name="ripley",
                 primary_language="java",
                 status="regular engineer",
                 machines=[
@@ -1091,7 +1091,7 @@ class _PolymorphicTestBase(object):
                 sess.query(Person)
                 .with_polymorphic("*")
                 .options(joinedload(Engineer.machines))
-                .filter(Person.name == "dilbert")
+                .filter(Person.name == "ripley")
                 .all(),
                 expected,
             )
@@ -1102,8 +1102,8 @@ class _PolymorphicTestBase(object):
         sess = create_session()
         expected = [
             Engineer(
-                name="dilbert",
-                engineer_name="dilbert",
+                name="ripley",
+                engineer_name="ripley",
                 primary_language="java",
                 status="regular engineer",
                 machines=[
@@ -1118,7 +1118,7 @@ class _PolymorphicTestBase(object):
             eq_(
                 sess.query(wp)
                 .options(subqueryload(wp.Engineer.machines))
-                .filter(wp.name == "dilbert")
+                .filter(wp.name == "ripley")
                 .all(),
                 expected,
             )
@@ -1131,7 +1131,7 @@ class _PolymorphicTestBase(object):
             #    sess.query(Person)
             #    .with_polymorphic("*")
             #    .options(subqueryload(Engineer.machines))
-            #    .filter(Person.name == "dilbert")
+            #    .filter(Person.name == "ripley")
             #    .all(),
             #    expected,
             # )
@@ -1206,7 +1206,7 @@ class _PolymorphicTestBase(object):
             sess.query(Company)
             .join(people.join(engineers), "employees")
             .join(Engineer.machines)
-            .filter(Engineer.name == "dilbert")
+            .filter(Engineer.name == "ripley")
             .all(),
             [c1],
         )
@@ -1352,7 +1352,7 @@ class _PolymorphicTestBase(object):
             sess.query(Company)
             .join(Company.employees)
             .join(Person.paperwork)
-            .filter(Person.name.in_(["dilbert", "vlad"]))
+            .filter(Person.name.in_(["ripley", "vlad"]))
             .filter(Paperwork.description.like("%#2%"))
             .all(),
             [c1],
@@ -1364,7 +1364,7 @@ class _PolymorphicTestBase(object):
             sess.query(Company)
             .join(Company.employees)
             .join(Person.paperwork)
-            .filter(Person.name.in_(["dilbert", "vlad"]))
+            .filter(Person.name.in_(["ripley", "vlad"]))
             .filter(Paperwork.description.like("%#%"))
             .all(),
             [c1, c2],
@@ -1375,7 +1375,7 @@ class _PolymorphicTestBase(object):
         eq_(
             sess.query(Company)
             .join("employees")
-            .filter(Person.name.in_(["dilbert", "vlad"]))
+            .filter(Person.name.in_(["ripley", "vlad"]))
             .join(Person.paperwork)
             .filter(Paperwork.description.like("%#2%"))
             .all(),
@@ -1387,7 +1387,7 @@ class _PolymorphicTestBase(object):
         eq_(
             sess.query(Company)
             .join("employees")
-            .filter(Person.name.in_(["dilbert", "vlad"]))
+            .filter(Person.name.in_(["ripley", "vlad"]))
             .join(Person.paperwork)
             .filter(Paperwork.description.like("%#%"))
             .all(),
@@ -1428,7 +1428,7 @@ class _PolymorphicTestBase(object):
             sess.query(Company)
             .join(ea, Company.employees)
             .join(pa, ea.paperwork)
-            .filter(ea.name.in_(["dilbert", "vlad"]))
+            .filter(ea.name.in_(["ripley", "vlad"]))
             .filter(pa.description.like("%#2%"))
             .all(),
             [c1],
@@ -1442,7 +1442,7 @@ class _PolymorphicTestBase(object):
             sess.query(Company)
             .join(ea, Company.employees)
             .join(pa, ea.paperwork)  # we can't use "paperwork" here?
-            .filter(ea.name.in_(["dilbert", "vlad"]))
+            .filter(ea.name.in_(["ripley", "vlad"]))
             .filter(pa.description.like("%#%"))
             .all(),
             [c1, c2],
@@ -1455,7 +1455,7 @@ class _PolymorphicTestBase(object):
         eq_(
             sess.query(Company)
             .join(ea, "employees")
-            .filter(ea.name.in_(["dilbert", "vlad"]))
+            .filter(ea.name.in_(["ripley", "vlad"]))
             .join(pa, ea.paperwork)
             .filter(pa.description.like("%#2%"))
             .all(),
@@ -1469,7 +1469,7 @@ class _PolymorphicTestBase(object):
         eq_(
             sess.query(Company)
             .join(ea, Company.employees)
-            .filter(ea.name.in_(["dilbert", "vlad"]))
+            .filter(ea.name.in_(["ripley", "vlad"]))
             .join(pa, ea.paperwork)
             .filter(pa.description.like("%#%"))
             .all(),
@@ -1526,7 +1526,7 @@ class _PolymorphicTestBase(object):
         eq_(
             sess.query(palias)
             .order_by(palias.person_id)
-            .filter(palias.name.in_(["dilbert", "wally"]))
+            .filter(palias.name.in_(["ripley", "wally"]))
             .all(),
             [e1, e2],
         )
@@ -1539,7 +1539,7 @@ class _PolymorphicTestBase(object):
         eq_(
             sess.query(Person, palias)
             .filter(Person.company_id == palias.company_id)
-            .filter(Person.name == "dogbert")
+            .filter(Person.name == "bishop")
             .filter(Person.person_id > palias.person_id)
             .order_by(Person.person_id, palias.person_id)
             .all(),
@@ -1558,7 +1558,7 @@ class _PolymorphicTestBase(object):
             eq_(
                 sess.query(Person, palias)
                 .filter(Person.company_id == palias.company_id)
-                .filter(Person.name == "dogbert")
+                .filter(Person.name == "bishop")
                 .filter(Person.person_id > palias.person_id)
                 .from_self()
                 .order_by(Person.person_id, palias.person_id)
@@ -1581,7 +1581,7 @@ class _PolymorphicTestBase(object):
             eq_(
                 sess.query(palias, palias2)
                 .filter(palias.company_id == palias2.company_id)
-                .filter(palias.name == "dogbert")
+                .filter(palias.name == "bishop")
                 .filter(palias.person_id > palias2.person_id)
                 .from_self()
                 .order_by(palias.person_id, palias2.person_id)
@@ -1601,7 +1601,7 @@ class _PolymorphicTestBase(object):
         stmt = (
             select(p1, p2)
             .filter(p1.company_id == p2.company_id)
-            .filter(p1.name == "dogbert")
+            .filter(p1.name == "bishop")
             .filter(p1.person_id > p2.person_id)
         )
 
@@ -1630,7 +1630,7 @@ class _PolymorphicTestBase(object):
         stmt = (
             select(p1, p2)
             .filter(p1.company_id == p2.company_id)
-            .filter(p1.name == "dogbert")
+            .filter(p1.name == "bishop")
             .filter(p1.person_id > p2.person_id)
         )
         subq = stmt.subquery()
@@ -1666,14 +1666,14 @@ class _PolymorphicTestBase(object):
             (
                 Engineer(
                     status="regular engineer",
-                    engineer_name="dilbert",
-                    name="dilbert",
+                    engineer_name="ripley",
+                    name="ripley",
                     company_id=1,
                     primary_language="java",
                     person_id=1,
                     type="engineer",
                 ),
-                "MegaCorp, Inc.",
+                "Yoyodyne, Inc.",
             ),
             (
                 Engineer(
@@ -1685,11 +1685,11 @@ class _PolymorphicTestBase(object):
                     person_id=2,
                     type="engineer",
                 ),
-                "MegaCorp, Inc.",
+                "Yoyodyne, Inc.",
             ),
             (
                 Engineer(
-                    status="elbonian engineer",
+                    status="weyland-utani engineer",
                     engineer_name="vlad",
                     name="vlad",
                     company_id=2,
@@ -1697,7 +1697,7 @@ class _PolymorphicTestBase(object):
                     person_id=5,
                     type="engineer",
                 ),
-                "Elbonia, Inc.",
+                "Weyland-Utani Corporation",
             ),
         ]
         eq_(
@@ -1748,11 +1748,11 @@ class _PolymorphicTestBase(object):
     def test_mixed_entities_join_to_poly(self, q):
         sess = create_session()
         expected = [
-            ("dilbert", "MegaCorp, Inc."),
-            ("wally", "MegaCorp, Inc."),
-            ("pointy haired boss", "MegaCorp, Inc."),
-            ("dogbert", "MegaCorp, Inc."),
-            ("vlad", "Elbonia, Inc."),
+            ("ripley", "Yoyodyne, Inc."),
+            ("wally", "Yoyodyne, Inc."),
+            ("pointy haired boss", "Yoyodyne, Inc."),
+            ("bishop", "Yoyodyne, Inc."),
+            ("vlad", "Weyland-Utani Corporation"),
         ]
         eq_(
             q(self, sess).all(), expected,
@@ -1761,9 +1761,9 @@ class _PolymorphicTestBase(object):
     def test_mixed_entities_two(self):
         sess = create_session()
         expected = [
-            ("java", "MegaCorp, Inc."),
-            ("cobol", "Elbonia, Inc."),
-            ("c++", "MegaCorp, Inc."),
+            ("java", "Yoyodyne, Inc."),
+            ("cobol", "Weyland-Utani Corporation"),
+            ("c++", "Yoyodyne, Inc."),
         ]
         eq_(
             sess.query(Engineer.primary_language, Company.name)
@@ -1780,16 +1780,16 @@ class _PolymorphicTestBase(object):
         expected = [
             (
                 Engineer(
-                    status="elbonian engineer",
+                    status="weyland-utani engineer",
                     engineer_name="vlad",
                     name="vlad",
                     primary_language="cobol",
                 ),
-                "Elbonia, Inc.",
+                "Weyland-Utani Corporation",
                 Engineer(
                     status="regular engineer",
-                    engineer_name="dilbert",
-                    name="dilbert",
+                    engineer_name="ripley",
+                    name="ripley",
                     company_id=1,
                     primary_language="java",
                     person_id=1,
@@ -1800,8 +1800,8 @@ class _PolymorphicTestBase(object):
         eq_(
             sess.query(Person, Company.name, palias)
             .join(Company.employees)
-            .filter(Company.name == "Elbonia, Inc.")
-            .filter(palias.name == "dilbert")
+            .filter(Company.name == "Weyland-Utani Corporation")
+            .filter(palias.name == "ripley")
             .filter(palias.person_id != Person.person_id)
             .all(),
             expected,
@@ -1814,16 +1814,16 @@ class _PolymorphicTestBase(object):
             (
                 Engineer(
                     status="regular engineer",
-                    engineer_name="dilbert",
-                    name="dilbert",
+                    engineer_name="ripley",
+                    name="ripley",
                     company_id=1,
                     primary_language="java",
                     person_id=1,
                     type="engineer",
                 ),
-                "Elbonia, Inc.",
+                "Weyland-Utani Corporation",
                 Engineer(
-                    status="elbonian engineer",
+                    status="weyland-utani engineer",
                     engineer_name="vlad",
                     name="vlad",
                     primary_language="cobol",
@@ -1835,8 +1835,8 @@ class _PolymorphicTestBase(object):
             sess.query(palias, Company.name, Person)
             .select_from(join(palias, Company, true()))
             .join(Company.employees)
-            .filter(Company.name == "Elbonia, Inc.")
-            .filter(palias.name == "dilbert")
+            .filter(Company.name == "Weyland-Utani Corporation")
+            .filter(palias.name == "ripley")
             .all(),
             expected,
         )
@@ -1844,12 +1844,12 @@ class _PolymorphicTestBase(object):
     def test_mixed_entities_five(self):
         sess = create_session()
         palias = aliased(Person)
-        expected = [("vlad", "Elbonia, Inc.", "dilbert")]
+        expected = [("vlad", "Weyland-Utani Corporation", "ripley")]
         eq_(
             sess.query(Person.name, Company.name, palias.name)
             .join(Company.employees)
-            .filter(Company.name == "Elbonia, Inc.")
-            .filter(palias.name == "dilbert")
+            .filter(Company.name == "Weyland-Utani Corporation")
+            .filter(palias.name == "ripley")
             .filter(palias.company_id != Person.company_id)
             .all(),
             expected,
@@ -1859,14 +1859,14 @@ class _PolymorphicTestBase(object):
         sess = create_session()
         palias = aliased(Person)
         expected = [
-            ("manager", "dogbert", "engineer", "dilbert"),
-            ("manager", "dogbert", "engineer", "wally"),
-            ("manager", "dogbert", "boss", "pointy haired boss"),
+            ("manager", "bishop", "engineer", "ripley"),
+            ("manager", "bishop", "engineer", "wally"),
+            ("manager", "bishop", "boss", "pointy haired boss"),
         ]
         eq_(
             sess.query(Person.type, Person.name, palias.type, palias.name)
             .filter(Person.company_id == palias.company_id)
-            .filter(Person.name == "dogbert")
+            .filter(Person.name == "bishop")
             .filter(Person.person_id > palias.person_id)
             .order_by(Person.person_id, palias.person_id)
             .all(),
@@ -1876,12 +1876,12 @@ class _PolymorphicTestBase(object):
     def test_mixed_entities_seven(self):
         sess = create_session()
         expected = [
-            ("dilbert", "tps report #1"),
-            ("dilbert", "tps report #2"),
-            ("dogbert", "review #2"),
-            ("dogbert", "review #3"),
+            ("ripley", "tps report #1"),
+            ("ripley", "tps report #2"),
+            ("bishop", "review #2"),
+            ("bishop", "review #3"),
             ("pointy haired boss", "review #1"),
-            ("vlad", "elbonian missive #3"),
+            ("vlad", "weyland-utani missive #3"),
             ("wally", "tps report #3"),
             ("wally", "tps report #4"),
         ]
@@ -1904,7 +1904,7 @@ class _PolymorphicTestBase(object):
 
     def test_mixed_entities_nine(self):
         sess = create_session()
-        expected = [("Elbonia, Inc.", 1), ("MegaCorp, Inc.", 4)]
+        expected = [("Weyland-Utani Corporation", 1), ("Yoyodyne, Inc.", 4)]
         eq_(
             sess.query(Company.name, func.count(Person.person_id))
             .filter(Company.company_id == Person.company_id)
@@ -1916,7 +1916,7 @@ class _PolymorphicTestBase(object):
 
     def test_mixed_entities_ten(self):
         sess = create_session()
-        expected = [("Elbonia, Inc.", 1), ("MegaCorp, Inc.", 4)]
+        expected = [("Weyland-Utani Corporation", 1), ("Yoyodyne, Inc.", 4)]
         eq_(
             sess.query(Company.name, func.count(Person.person_id))
             .join(Company.employees)
@@ -1957,11 +1957,11 @@ class _PolymorphicTestBase(object):
 
     def test_mixed_entities_twelve(self):
         sess = create_session()
-        expected = [("vlad", "Elbonia, Inc.")]
+        expected = [("vlad", "Weyland-Utani Corporation")]
         eq_(
             sess.query(Person.name, Company.name)
             .join(Company.employees)
-            .filter(Company.name == "Elbonia, Inc.")
+            .filter(Company.name == "Weyland-Utani Corporation")
             .all(),
             expected,
         )
@@ -1973,7 +1973,7 @@ class _PolymorphicTestBase(object):
 
     def test_mixed_entities_fourteen(self):
         sess = create_session()
-        expected = [("dilbert", "java"), ("wally", "c++"), ("vlad", "cobol")]
+        expected = [("ripley", "java"), ("wally", "c++"), ("vlad", "cobol")]
         eq_(
             sess.query(Engineer.name, Engineer.primary_language).all(),
             expected,
@@ -1984,9 +1984,9 @@ class _PolymorphicTestBase(object):
 
         expected = [
             (
-                "Elbonia, Inc.",
+                "Weyland-Utani Corporation",
                 Engineer(
-                    status="elbonian engineer",
+                    status="weyland-utani engineer",
                     engineer_name="vlad",
                     name="vlad",
                     primary_language="cobol",
@@ -1996,7 +1996,7 @@ class _PolymorphicTestBase(object):
         eq_(
             sess.query(Company.name, Person)
             .join(Company.employees)
-            .filter(Company.name == "Elbonia, Inc.")
+            .filter(Company.name == "Weyland-Utani Corporation")
             .all(),
             expected,
         )
@@ -2006,40 +2006,40 @@ class _PolymorphicTestBase(object):
         expected = [
             (
                 Engineer(
-                    status="elbonian engineer",
+                    status="weyland-utani engineer",
                     engineer_name="vlad",
                     name="vlad",
                     primary_language="cobol",
                 ),
-                "Elbonia, Inc.",
+                "Weyland-Utani Corporation",
             )
         ]
         eq_(
             sess.query(Person, Company.name)
             .join(Company.employees)
-            .filter(Company.name == "Elbonia, Inc.")
+            .filter(Company.name == "Weyland-Utani Corporation")
             .all(),
             expected,
         )
 
     def test_mixed_entities_seventeen(self):
         sess = create_session()
-        expected = [("pointy haired boss",), ("dogbert",)]
+        expected = [("pointy haired boss",), ("bishop",)]
         eq_(sess.query(Manager.name).all(), expected)
 
     def test_mixed_entities_eighteen(self):
         sess = create_session()
-        expected = [("pointy haired boss foo",), ("dogbert foo",)]
+        expected = [("pointy haired boss foo",), ("bishop foo",)]
         eq_(sess.query(Manager.name + " foo").all(), expected)
 
     def test_mixed_entities_nineteen(self):
         sess = create_session()
         row = (
             sess.query(Engineer.name, Engineer.primary_language)
-            .filter(Engineer.name == "dilbert")
+            .filter(Engineer.name == "ripley")
             .first()
         )
-        assert row.name == "dilbert"
+        assert row.name == "ripley"
         assert row.primary_language == "java"
 
     def test_correlation_one(self):
@@ -2057,7 +2057,7 @@ class _PolymorphicTestBase(object):
                 .filter(Company.company_id == Person.company_id)
                 .correlate(Person)
                 .scalar_subquery()
-                == "Elbonia, Inc."
+                == "Weyland-Utani Corporation"
             )
             .all(),
             [(e3.name,)],
@@ -2075,7 +2075,7 @@ class _PolymorphicTestBase(object):
                 .filter(Company.company_id == paliased.company_id)
                 .correlate(paliased)
                 .scalar_subquery()
-                == "Elbonia, Inc."
+                == "Weyland-Utani Corporation"
             )
             .all(),
             [(e3.name,)],
@@ -2093,7 +2093,7 @@ class _PolymorphicTestBase(object):
                 .filter(Company.company_id == paliased.company_id)
                 .correlate(paliased)
                 .scalar_subquery()
-                == "Elbonia, Inc."
+                == "Weyland-Utani Corporation"
             )
             .all(),
             [(e3.name,)],
@@ -2135,7 +2135,7 @@ class PolymorphicTest(_PolymorphicTestBase, _Polymorphic):
                 .filter(Company.company_id == p_poly.company_id)
                 .correlate(p_poly)
                 .scalar_subquery()
-                == "Elbonia, Inc."
+                == "Weyland-Utani Corporation"
             )
             .all(),
             [(e3.name,)],
@@ -2154,7 +2154,7 @@ class PolymorphicTest(_PolymorphicTestBase, _Polymorphic):
                 .filter(Company.company_id == p_poly.company_id)
                 .correlate(p_poly)
                 .scalar_subquery()
-                == "Elbonia, Inc."
+                == "Weyland-Utani Corporation"
             )
             .all(),
             [(e3.name,)],
@@ -2191,7 +2191,7 @@ class PolymorphicPolymorphicTest(
             sess.query(palias, Company.name)
             .order_by(palias.person_id)
             .join(Person, Company.employees)
-            .filter(palias.name == "dilbert"),
+            .filter(palias.name == "ripley"),
             "SELECT anon_1.people_person_id AS anon_1_people_person_id, "
             "anon_1.people_company_id AS anon_1_people_company_id, "
             "anon_1.people_name AS anon_1_people_name, "
@@ -2243,7 +2243,7 @@ class PolymorphicPolymorphicTest(
             .select_from(palias)
             .order_by(palias.person_id)
             .join(Person, Company.employees)
-            .filter(palias.name == "dilbert"),
+            .filter(palias.name == "ripley"),
             "SELECT people_1.person_id AS people_1_person_id, "
             "people_1.company_id AS people_1_company_id, "
             "people_1.name AS people_1_name, people_1.type AS people_1_type, "
@@ -2279,8 +2279,8 @@ class PolymorphicUnionsTest(_PolymorphicTestBase, _PolymorphicUnions):
         sess = create_session()
         expected = [
             Engineer(
-                name="dilbert",
-                engineer_name="dilbert",
+                name="ripley",
+                engineer_name="ripley",
                 primary_language="java",
                 status="regular engineer",
                 machines=[
@@ -2295,7 +2295,7 @@ class PolymorphicUnionsTest(_PolymorphicTestBase, _PolymorphicUnions):
             eq_(
                 sess.query(wp)
                 .options(subqueryload(wp.Engineer.machines))
-                .filter(wp.name == "dilbert")
+                .filter(wp.name == "ripley")
                 .all(),
                 expected,
             )
@@ -2324,7 +2324,7 @@ class PolymorphicUnionsTest(_PolymorphicTestBase, _PolymorphicUnions):
                 "managers.manager_name AS manager_name FROM people "
                 "JOIN managers ON people.person_id = managers.person_id) "
                 "AS pjoin WHERE pjoin.name = :name_1",
-                params=[{"name_1": "dilbert"}],
+                params=[{"name_1": "ripley"}],
             ),
             CompiledSQL(
                 "SELECT machines.machine_id AS machines_machine_id, "
@@ -2349,7 +2349,7 @@ class PolymorphicUnionsTest(_PolymorphicTestBase, _PolymorphicUnions):
                 "AS pjoin WHERE pjoin.name = :name_1) AS anon_1 JOIN "
                 "machines ON anon_1.pjoin_person_id = machines.engineer_id "
                 "ORDER BY machines.machine_id",
-                params=[{"name_1": "dilbert"}],
+                params=[{"name_1": "ripley"}],
             ),
         )
 

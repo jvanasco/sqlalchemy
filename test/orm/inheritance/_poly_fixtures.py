@@ -166,8 +166,8 @@ class _PolymorphicFixtureBase(fixtures.MappedTest, AssertsCompiledSQL):
     def insert_data(cls, connection):
 
         cls.e1 = e1 = Engineer(
-            name="dilbert",
-            engineer_name="dilbert",
+            name="ripley",
+            engineer_name="ripley",
             primary_language="java",
             status="regular engineer",
             paperwork=[
@@ -198,8 +198,8 @@ class _PolymorphicFixtureBase(fixtures.MappedTest, AssertsCompiledSQL):
         )
 
         cls.m1 = m1 = Manager(
-            name="dogbert",
-            manager_name="dogbert",
+            name="bishop",
+            manager_name="bishop",
             status="regular manager",
             paperwork=[
                 Paperwork(description="review #2"),
@@ -211,14 +211,14 @@ class _PolymorphicFixtureBase(fixtures.MappedTest, AssertsCompiledSQL):
             name="vlad",
             engineer_name="vlad",
             primary_language="cobol",
-            status="elbonian engineer",
-            paperwork=[Paperwork(description="elbonian missive #3")],
+            status="weyland-utani engineer",
+            paperwork=[Paperwork(description="weyland-utani missive #3")],
             machines=[Machine(name="Commodore 64"), Machine(name="IBM 3270")],
         )
 
-        cls.c1 = c1 = Company(name="MegaCorp, Inc.")
+        cls.c1 = c1 = Company(name="Yoyodyne, Inc.")
         c1.employees = [e1, e2, b1, m1]
-        cls.c2 = c2 = Company(name="Elbonia, Inc.")
+        cls.c2 = c2 = Company(name="Weyland-Utani Corporation")
         c2.employees = [e3]
 
         with sessionmaker(connection, expire_on_commit=False).begin() as sess:
@@ -241,11 +241,11 @@ class _PolymorphicFixtureBase(fixtures.MappedTest, AssertsCompiledSQL):
     def _company_with_emps_fixture(self):
         return [
             Company(
-                name="MegaCorp, Inc.",
+                name="Yoyodyne, Inc.",
                 employees=[
                     Engineer(
-                        name="dilbert",
-                        engineer_name="dilbert",
+                        name="ripley",
+                        engineer_name="ripley",
                         primary_language="java",
                         status="regular engineer",
                     ),
@@ -262,20 +262,20 @@ class _PolymorphicFixtureBase(fixtures.MappedTest, AssertsCompiledSQL):
                         status="da boss",
                     ),
                     Manager(
-                        name="dogbert",
-                        manager_name="dogbert",
+                        name="bishop",
+                        manager_name="bishop",
                         status="regular manager",
                     ),
                 ],
             ),
             Company(
-                name="Elbonia, Inc.",
+                name="Weyland-Utani Corporation",
                 employees=[
                     Engineer(
                         name="vlad",
                         engineer_name="vlad",
                         primary_language="cobol",
-                        status="elbonian engineer",
+                        status="weyland-utani engineer",
                     )
                 ],
             ),
@@ -284,8 +284,8 @@ class _PolymorphicFixtureBase(fixtures.MappedTest, AssertsCompiledSQL):
     def _emps_wo_relationships_fixture(self):
         return [
             Engineer(
-                name="dilbert",
-                engineer_name="dilbert",
+                name="ripley",
+                engineer_name="ripley",
                 primary_language="java",
                 status="regular engineer",
             ),
@@ -302,15 +302,15 @@ class _PolymorphicFixtureBase(fixtures.MappedTest, AssertsCompiledSQL):
                 status="da boss",
             ),
             Manager(
-                name="dogbert",
-                manager_name="dogbert",
+                name="bishop",
+                manager_name="bishop",
                 status="regular manager",
             ),
             Engineer(
                 name="vlad",
                 engineer_name="vlad",
                 primary_language="cobol",
-                status="elbonian engineer",
+                status="weyland-utani engineer",
             ),
         ]
 

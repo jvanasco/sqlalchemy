@@ -220,7 +220,7 @@ class InheritedJoinTest(InheritedTest, AssertsCompiledSQL):
         self.assert_compile(
             sess.query(Company)
             .join(people.join(engineers), Company.employees)
-            .filter(Engineer.name == "dilbert"),
+            .filter(Engineer.name == "ripley"),
             "SELECT companies.company_id AS companies_company_id, "
             "companies.name AS companies_name "
             "FROM companies JOIN (people "
@@ -235,7 +235,7 @@ class InheritedJoinTest(InheritedTest, AssertsCompiledSQL):
             sess.query(Company)
             .join(people.join(engineers), Company.employees)
             .join(mach_alias, Engineer.machines, from_joinpoint=True)
-            .filter(Engineer.name == "dilbert")
+            .filter(Engineer.name == "ripley")
             .filter(mach_alias.name == "foo"),
             "SELECT companies.company_id AS companies_company_id, "
             "companies.name AS companies_name "

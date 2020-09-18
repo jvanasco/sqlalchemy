@@ -705,7 +705,7 @@ class DeprecatedInhTest(_poly_fixtures._Polymorphic):
                 sess.query(Company)
                 .join(people.join(engineers), Company.employees)
                 .join(mach_alias, Engineer.machines, from_joinpoint=True)
-                .filter(Engineer.name == "dilbert")
+                .filter(Engineer.name == "ripley")
                 .filter(Machine.name == "foo"),
                 "SELECT companies.company_id AS companies_company_id, "
                 "companies.name AS companies_name "

@@ -114,8 +114,8 @@ class SelfReferentialTestJoinedToBase(fixtures.MappedTest):
         )
 
     def test_has(self):
-        p1 = Person(name="dogbert")
-        e1 = Engineer(name="dilbert", primary_language="java", reports_to=p1)
+        p1 = Person(name="bishop")
+        e1 = Engineer(name="ripley", primary_language="java", reports_to=p1)
         sess = create_session()
         sess.add(p1)
         sess.add(e1)
@@ -123,13 +123,13 @@ class SelfReferentialTestJoinedToBase(fixtures.MappedTest):
         sess.expunge_all()
         eq_(
             sess.query(Engineer)
-            .filter(Engineer.reports_to.has(Person.name == "dogbert"))
+            .filter(Engineer.reports_to.has(Person.name == "bishop"))
             .first(),
-            Engineer(name="dilbert"),
+            Engineer(name="ripley"),
         )
 
     def test_oftype_aliases_in_exists(self):
-        e1 = Engineer(name="dilbert", primary_language="java")
+        e1 = Engineer(name="ripley", primary_language="java")
         e2 = Engineer(name="wally", primary_language="c++", reports_to=e1)
         sess = create_session()
         sess.add_all([e1, e2])
@@ -138,7 +138,7 @@ class SelfReferentialTestJoinedToBase(fixtures.MappedTest):
             sess.query(Engineer)
             .filter(
                 Engineer.reports_to.of_type(Engineer).has(
-                    Engineer.name == "dilbert"
+                    Engineer.name == "ripley"
                 )
             )
             .first(),
@@ -146,8 +146,8 @@ class SelfReferentialTestJoinedToBase(fixtures.MappedTest):
         )
 
     def test_join(self):
-        p1 = Person(name="dogbert")
-        e1 = Engineer(name="dilbert", primary_language="java", reports_to=p1)
+        p1 = Person(name="bishop")
+        e1 = Engineer(name="ripley", primary_language="java", reports_to=p1)
         sess = create_session()
         sess.add(p1)
         sess.add(e1)
@@ -157,9 +157,9 @@ class SelfReferentialTestJoinedToBase(fixtures.MappedTest):
         eq_(
             sess.query(Engineer)
             .join(pa, "reports_to")
-            .filter(pa.name == "dogbert")
+            .filter(pa.name == "bishop")
             .first(),
-            Engineer(name="dilbert"),
+            Engineer(name="ripley"),
         )
 
 
@@ -240,8 +240,8 @@ class SelfReferentialJ2JTest(fixtures.MappedTest):
         )
 
     def test_has(self):
-        m1 = Manager(name="dogbert")
-        e1 = Engineer(name="dilbert", primary_language="java", reports_to=m1)
+        m1 = Manager(name="bishop")
+        e1 = Engineer(name="ripley", primary_language="java", reports_to=m1)
         sess = create_session()
         sess.add(m1)
         sess.add(e1)
@@ -250,14 +250,14 @@ class SelfReferentialJ2JTest(fixtures.MappedTest):
 
         eq_(
             sess.query(Engineer)
-            .filter(Engineer.reports_to.has(Manager.name == "dogbert"))
+            .filter(Engineer.reports_to.has(Manager.name == "bishop"))
             .first(),
-            Engineer(name="dilbert"),
+            Engineer(name="ripley"),
         )
 
     def test_join(self):
-        m1 = Manager(name="dogbert")
-        e1 = Engineer(name="dilbert", primary_language="java", reports_to=m1)
+        m1 = Manager(name="bishop")
+        e1 = Engineer(name="ripley", primary_language="java", reports_to=m1)
         sess = create_session()
         sess.add(m1)
         sess.add(e1)
@@ -269,16 +269,16 @@ class SelfReferentialJ2JTest(fixtures.MappedTest):
         eq_(
             sess.query(Engineer)
             .join(ma, "reports_to")
-            .filter(ma.name == "dogbert")
+            .filter(ma.name == "bishop")
             .first(),
-            Engineer(name="dilbert"),
+            Engineer(name="ripley"),
         )
 
     def test_filter_aliasing(self):
-        m1 = Manager(name="dogbert")
+        m1 = Manager(name="bishop")
         m2 = Manager(name="foo")
         e1 = Engineer(name="wally", primary_language="java", reports_to=m1)
-        e2 = Engineer(name="dilbert", primary_language="c++", reports_to=m2)
+        e2 = Engineer(name="ripley", primary_language="c++", reports_to=m2)
         e3 = Engineer(name="etc", primary_language="c++")
 
         sess = create_session()
@@ -290,7 +290,7 @@ class SelfReferentialJ2JTest(fixtures.MappedTest):
         eq_(
             sess.query(Manager)
             .join(Manager.engineers)
-            .filter(Manager.name == "dogbert")
+            .filter(Manager.name == "bishop")
             .all(),
             [m1],
         )
@@ -298,7 +298,7 @@ class SelfReferentialJ2JTest(fixtures.MappedTest):
         eq_(
             sess.query(Manager)
             .join(Manager.engineers)
-            .filter(Engineer.name == "dilbert")
+            .filter(Engineer.name == "ripley")
             .all(),
             [m2],
         )
@@ -312,9 +312,9 @@ class SelfReferentialJ2JTest(fixtures.MappedTest):
         )
 
     def test_relationship_compare(self):
-        m1 = Manager(name="dogbert")
+        m1 = Manager(name="bishop")
         m2 = Manager(name="foo")
-        e1 = Engineer(name="dilbert", primary_language="java", reports_to=m1)
+        e1 = Engineer(name="ripley", primary_language="java", reports_to=m1)
         e2 = Engineer(name="wally", primary_language="c++", reports_to=m2)
         e3 = Engineer(name="etc", primary_language="c++")
 
@@ -408,7 +408,7 @@ class SelfReferentialJ2JSelfTest(fixtures.MappedTest):
 
     def _two_obj_fixture(self):
         e1 = Engineer(name="wally")
-        e2 = Engineer(name="dilbert", reports_to=e1)
+        e2 = Engineer(name="ripley", reports_to=e1)
         sess = Session()
         sess.add_all([e1, e2])
         sess.commit()
@@ -429,7 +429,7 @@ class SelfReferentialJ2JSelfTest(fixtures.MappedTest):
             sess.query(Engineer)
             .filter(Engineer.reports_to.has(Engineer.name == "wally"))
             .first(),
-            Engineer(name="dilbert"),
+            Engineer(name="ripley"),
         )
 
     def test_join_explicit_alias(self):
@@ -451,7 +451,7 @@ class SelfReferentialJ2JSelfTest(fixtures.MappedTest):
             .join(ea, "reports_to")
             .filter(ea.name == "wally")
             .first(),
-            Engineer(name="dilbert"),
+            Engineer(name="ripley"),
         )
 
     def test_join_aliased_two(self):
