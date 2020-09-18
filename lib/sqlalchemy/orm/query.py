@@ -431,7 +431,10 @@ class Query(
         return stmt
 
     def subquery(
-        self, name=None, with_labels=False, reduce_columns=False,
+        self,
+        name=None,
+        with_labels=False,
+        reduce_columns=False,
     ):
         """Return the full SELECT statement represented by
         this :class:`_query.Query`, embedded within an
@@ -1488,7 +1491,7 @@ class Query(
         return fn(self)
 
     def get_execution_options(self):
-        """ Get the non-SQL options which will take effect during execution.
+        """Get the non-SQL options which will take effect during execution.
 
         .. versionadded:: 1.3
 
@@ -1500,7 +1503,7 @@ class Query(
 
     @_generative
     def execution_options(self, **kwargs):
-        """ Set non-SQL options which take effect during execution.
+        """Set non-SQL options which take effect during execution.
 
         Options allowed here include all of those accepted by
         :meth:`_engine.Connection.execution_options`, as well as a series
@@ -3014,7 +3017,9 @@ class Query(
 
         """
 
-        bulk_del = BulkDelete(self,)
+        bulk_del = BulkDelete(
+            self,
+        )
         if self.dispatch.before_compile_delete:
             for fn in self.dispatch.before_compile_delete:
                 new_query = fn(bulk_del.query, bulk_del)

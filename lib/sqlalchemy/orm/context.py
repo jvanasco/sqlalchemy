@@ -1224,7 +1224,14 @@ class ORMSelectCompileState(ORMCompileState, SelectState):
             # figure out the final "left" and "right" sides and create an
             # ORMJoin to add to our _from_obj tuple
             self._join_left_to_right(
-                left, right, onclause, prop, False, False, isouter, full,
+                left,
+                right,
+                onclause,
+                prop,
+                False,
+                False,
+                isouter,
+                full,
             )
 
     def _legacy_join(self, args):
@@ -1823,7 +1830,8 @@ class ORMSelectCompileState(ORMCompileState, SelectState):
             self._mapper_loads_polymorphically_with(
                 right_mapper,
                 sql_util.ColumnAdapter(
-                    right_mapper.selectable, right_mapper._equivalent_columns,
+                    right_mapper.selectable,
+                    right_mapper._equivalent_columns,
                 ),
             )
         # if the onclause is a ClauseElement, adapt it with any
@@ -2539,7 +2547,11 @@ class _ORMColumnEntity(_ColumnEntity):
     )
 
     def __init__(
-        self, compile_state, column, parententity, parent_bundle=None,
+        self,
+        compile_state,
+        column,
+        parententity,
+        parent_bundle=None,
     ):
 
         annotations = column._annotations

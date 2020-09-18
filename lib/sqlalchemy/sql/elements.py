@@ -3517,7 +3517,10 @@ class BinaryExpression(ColumnElement):
         ("operator", InternalTraversal.dp_operator),
         ("negate", InternalTraversal.dp_operator),
         ("modifiers", InternalTraversal.dp_plain_dict),
-        ("type", InternalTraversal.dp_type,),  # affects JSON CAST operators
+        (
+            "type",
+            InternalTraversal.dp_type,
+        ),  # affects JSON CAST operators
     ]
 
     _is_implicitly_boolean = True
@@ -3629,8 +3632,7 @@ class Slice(ColumnElement):
 
 
 class IndexExpression(BinaryExpression):
-    """Represent the class of expressions that are like an "index" operation.
-    """
+    """Represent the class of expressions that are like an "index" operation."""
 
     pass
 

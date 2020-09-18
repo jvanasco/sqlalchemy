@@ -883,7 +883,9 @@ class GetTest(QueryTest):
 
         stmt = select(User).execution_options(populate_existing=True)
 
-        s.execute(stmt,).scalars().all()
+        s.execute(
+            stmt,
+        ).scalars().all()
 
         self.assert_(u not in s.dirty)
 
@@ -2768,15 +2770,11 @@ class FilterTest(QueryTest, AssertsCompiledSQL):
 
         # test that the contents are not adapted by the aliased join
         ua = aliased(Address)
-        assert (
-            [User(id=7), User(id=8)]
-            == sess.query(User)
-            .join(ua, "addresses")
-            .filter(
-                ~User.addresses.any(Address.email_address == "fred@fred.com")
-            )
-            .all()
-        )
+        assert [User(id=7), User(id=8)] == sess.query(User).join(
+            ua, "addresses"
+        ).filter(
+            ~User.addresses.any(Address.email_address == "fred@fred.com")
+        ).all()
 
         assert [User(id=10)] == sess.query(User).outerjoin(
             ua, "addresses"
@@ -2790,15 +2788,11 @@ class FilterTest(QueryTest, AssertsCompiledSQL):
         sess = create_session()
 
         # test that any() doesn't overcorrelate
-        assert (
-            [User(id=7), User(id=8)]
-            == sess.query(User)
-            .join("addresses")
-            .filter(
-                ~User.addresses.any(Address.email_address == "fred@fred.com")
-            )
-            .all()
-        )
+        assert [User(id=7), User(id=8)] == sess.query(User).join(
+            "addresses"
+        ).filter(
+            ~User.addresses.any(Address.email_address == "fred@fred.com")
+        ).all()
 
     def test_has(self):
         # see also HasAnyTest, a newer suite which tests these at the level of
@@ -2814,42 +2808,41 @@ class FilterTest(QueryTest, AssertsCompiledSQL):
             Address.user.has(name="fred")
         ).all()
 
-        assert (
-            [Address(id=2), Address(id=3), Address(id=4), Address(id=5)]
-            == sess.query(Address)
-            .filter(Address.user.has(User.name.like("%ed%")))
-            .order_by(Address.id)
-            .all()
-        )
+        assert [
+            Address(id=2),
+            Address(id=3),
+            Address(id=4),
+            Address(id=5),
+        ] == sess.query(Address).filter(
+            Address.user.has(User.name.like("%ed%"))
+        ).order_by(
+            Address.id
+        ).all()
 
-        assert (
-            [Address(id=2), Address(id=3), Address(id=4)]
-            == sess.query(Address)
-            .filter(Address.user.has(User.name.like("%ed%"), id=8))
-            .order_by(Address.id)
-            .all()
-        )
+        assert [Address(id=2), Address(id=3), Address(id=4)] == sess.query(
+            Address
+        ).filter(Address.user.has(User.name.like("%ed%"), id=8)).order_by(
+            Address.id
+        ).all()
 
         # test has() doesn't overcorrelate
-        assert (
-            [Address(id=2), Address(id=3), Address(id=4)]
-            == sess.query(Address)
-            .join("user")
-            .filter(Address.user.has(User.name.like("%ed%"), id=8))
-            .order_by(Address.id)
-            .all()
-        )
+        assert [Address(id=2), Address(id=3), Address(id=4)] == sess.query(
+            Address
+        ).join("user").filter(
+            Address.user.has(User.name.like("%ed%"), id=8)
+        ).order_by(
+            Address.id
+        ).all()
 
         # test has() doesn't get subquery contents adapted by aliased join
         ua = aliased(User)
-        assert (
-            [Address(id=2), Address(id=3), Address(id=4)]
-            == sess.query(Address)
-            .join(ua, "user")
-            .filter(Address.user.has(User.name.like("%ed%"), id=8))
-            .order_by(Address.id)
-            .all()
-        )
+        assert [Address(id=2), Address(id=3), Address(id=4)] == sess.query(
+            Address
+        ).join(ua, "user").filter(
+            Address.user.has(User.name.like("%ed%"), id=8)
+        ).order_by(
+            Address.id
+        ).all()
 
         dingaling = sess.query(Dingaling).get(2)
         assert [User(id=9)] == sess.query(User).filter(
@@ -3381,7 +3374,7 @@ class SetOpsTest(QueryTest, AssertsCompiledSQL):
 
     def test_union_literal_expressions_compile(self):
         """test that column expressions translate during
-            the _from_statement() portion of union(), others"""
+        the _from_statement() portion of union(), others"""
 
         User = self.classes.User
 
@@ -3575,25 +3568,20 @@ class AggregateTest(QueryTest):
         User, Address = self.classes.User, self.classes.Address
 
         sess = create_session()
-        assert (
-            [User(name="ed", id=8)]
-            == sess.query(User)
-            .order_by(User.id)
-            .group_by(User)
-            .join("addresses")
-            .having(func.count(Address.id) > 2)
-            .all()
-        )
+        assert [User(name="ed", id=8)] == sess.query(User).order_by(
+            User.id
+        ).group_by(User).join("addresses").having(
+            func.count(Address.id) > 2
+        ).all()
 
-        assert (
-            [User(name="jack", id=7), User(name="fred", id=9)]
-            == sess.query(User)
-            .order_by(User.id)
-            .group_by(User)
-            .join("addresses")
-            .having(func.count(Address.id) < 2)
-            .all()
-        )
+        assert [
+            User(name="jack", id=7),
+            User(name="fred", id=9),
+        ] == sess.query(User).order_by(User.id).group_by(User).join(
+            "addresses"
+        ).having(
+            func.count(Address.id) < 2
+        ).all()
 
 
 class ExistsTest(QueryTest, AssertsCompiledSQL):
@@ -3657,7 +3645,8 @@ class CountTest(QueryTest):
         s = create_session()
 
         eq_(
-            s.execute(select(func.count()).select_from(User)).scalar(), 4,
+            s.execute(select(func.count()).select_from(User)).scalar(),
+            4,
         )
 
         eq_(
@@ -3730,17 +3719,20 @@ class CountTest(QueryTest):
 
         stmt = select(User, Address).join(Address, true()).limit(2)
         eq_(
-            s.scalar(select(func.count()).select_from(stmt.subquery())), 2,
+            s.scalar(select(func.count()).select_from(stmt.subquery())),
+            2,
         )
 
         stmt = select(User, Address).join(Address, true()).limit(100)
         eq_(
-            s.scalar(select(func.count()).select_from(stmt.subquery())), 20,
+            s.scalar(select(func.count()).select_from(stmt.subquery())),
+            20,
         )
 
         stmt = select(User, Address).join(Address).limit(100)
         eq_(
-            s.scalar(select(func.count()).select_from(stmt.subquery())), 5,
+            s.scalar(select(func.count()).select_from(stmt.subquery())),
+            5,
         )
 
     def test_cols(self):
@@ -3774,33 +3766,39 @@ class CountTest(QueryTest):
 
         stmt = select(func.count(distinct(User.name)))
         eq_(
-            s.scalar(select(func.count()).select_from(stmt.subquery())), 1,
+            s.scalar(select(func.count()).select_from(stmt.subquery())),
+            1,
         )
 
         stmt = select(func.count(distinct(User.name))).distinct()
 
         eq_(
-            s.scalar(select(func.count()).select_from(stmt.subquery())), 1,
+            s.scalar(select(func.count()).select_from(stmt.subquery())),
+            1,
         )
 
         stmt = select(User.name)
         eq_(
-            s.scalar(select(func.count()).select_from(stmt.subquery())), 4,
+            s.scalar(select(func.count()).select_from(stmt.subquery())),
+            4,
         )
 
         stmt = select(User.name, Address).join(Address, true())
         eq_(
-            s.scalar(select(func.count()).select_from(stmt.subquery())), 20,
+            s.scalar(select(func.count()).select_from(stmt.subquery())),
+            20,
         )
 
         stmt = select(Address.user_id)
         eq_(
-            s.scalar(select(func.count()).select_from(stmt.subquery())), 5,
+            s.scalar(select(func.count()).select_from(stmt.subquery())),
+            5,
         )
 
         stmt = stmt.distinct()
         eq_(
-            s.scalar(select(func.count()).select_from(stmt.subquery())), 3,
+            s.scalar(select(func.count()).select_from(stmt.subquery())),
+            3,
         )
 
 
@@ -4122,7 +4120,10 @@ class DistinctTest(QueryTest, AssertsCompiledSQL):
             .order_by(User.id, User.name, Address.email_address)
         )
         q2 = sess.query(
-            User.id, User.name.label("foo"), Address.id, Address.email_address,
+            User.id,
+            User.name.label("foo"),
+            Address.id,
+            Address.email_address,
         )
 
         self.assert_compile(
@@ -4146,7 +4147,11 @@ class DistinctTest(QueryTest, AssertsCompiledSQL):
         sess = create_session()
 
         q = (
-            sess.query(User.id, User.name.label("foo"), Address.id,)
+            sess.query(
+                User.id,
+                User.name.label("foo"),
+                Address.id,
+            )
             .distinct(Address.email_address)
             .order_by(User.id, User.name)
         )

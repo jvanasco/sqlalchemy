@@ -468,7 +468,7 @@ class EagerTest(_fixtures.FixtureTest, testing.AssertsCompiledSQL):
 
     def test_orderby_related(self):
         """A regular mapper select on a single table can
-            order by a relationship to a second table"""
+        order by a relationship to a second table"""
 
         Address, addresses, users, User = (
             self.classes.Address,
@@ -3274,7 +3274,13 @@ class FromSelfTest(fixtures.DeclarativeMappedTest):
 
         s = Session(connection)
 
-        as_ = [A(id=i, cs=[C(), C()],) for i in range(1, 5)]
+        as_ = [
+            A(
+                id=i,
+                cs=[C(), C()],
+            )
+            for i in range(1, 5)
+        ]
 
         s.add_all(
             [

@@ -589,7 +589,8 @@ class FromSelfTest(QueryTest, AssertsCompiledSQL):
 
         q3 = sess.query(q2)
         eq_(
-            q3.all(), [(7, 1), (8, 1), (9, 1), (10, 1)],
+            q3.all(),
+            [(7, 1), (8, 1), (9, 1), (10, 1)],
         )
 
         q3 = select(q2)
@@ -2165,7 +2166,8 @@ class MixedEntitiesTest(QueryTest, AssertsCompiledSQL):
             select(User, Address).from_statement(selectquery)
         )
         eq_(
-            list(result), expected,
+            list(result),
+            expected,
         )
         sess.expunge_all()
 
@@ -3424,14 +3426,24 @@ class ExternalColumnsTest(QueryTest):
                 "concat": column_property((users.c.id * 2)),
                 "count": column_property(
                     select(func.count(addresses.c.id))
-                    .where(users.c.id == addresses.c.user_id,)
+                    .where(
+                        users.c.id == addresses.c.user_id,
+                    )
                     .correlate(users)
                     .scalar_subquery()
                 ),
             },
         )
 
-        mapper(Address, addresses, properties={"user": relationship(User,)})
+        mapper(
+            Address,
+            addresses,
+            properties={
+                "user": relationship(
+                    User,
+                )
+            },
+        )
 
         sess = create_session()
 
@@ -3585,7 +3597,9 @@ class ExternalColumnsTest(QueryTest):
                 "concat": column_property((users.c.id * 2)),
                 "count": column_property(
                     select(func.count(addresses.c.id))
-                    .where(users.c.id == addresses.c.user_id,)
+                    .where(
+                        users.c.id == addresses.c.user_id,
+                    )
                     .correlate(users)
                     .scalar_subquery()
                 ),

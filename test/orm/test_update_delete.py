@@ -1176,7 +1176,10 @@ class UpdateDeleteTest(fixtures.MappedTest):
         stmt = (
             update(User)
             .filter(User.id == 15)
-            .ordered_values(("name", "foob"), ("age", 123),)
+            .ordered_values(
+                ("name", "foob"),
+                ("age", 123),
+            )
         )
         result = session.execute(stmt)
         cols = [

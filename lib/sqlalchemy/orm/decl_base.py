@@ -209,7 +209,11 @@ class _ImperativeMapperConfig(_MapperConfig):
     __slots__ = ("dict_", "local_table", "inherits")
 
     def __init__(
-        self, registry, cls_, table, mapper_kw,
+        self,
+        registry,
+        cls_,
+        table,
+        mapper_kw,
     ):
         super(_ImperativeMapperConfig, self).__init__(registry, cls_)
 
@@ -229,7 +233,8 @@ class _ImperativeMapperConfig(_MapperConfig):
         mapper_cls = mapper
 
         return self.set_cls_attribute(
-            "__mapper__", mapper_cls(self.cls, self.local_table, **mapper_kw),
+            "__mapper__",
+            mapper_cls(self.cls, self.local_table, **mapper_kw),
         )
 
     def _setup_inheritance(self, mapper_kw):
@@ -280,7 +285,12 @@ class _ClassScanMapperConfig(_MapperConfig):
     )
 
     def __init__(
-        self, registry, cls_, dict_, table, mapper_kw,
+        self,
+        registry,
+        cls_,
+        dict_,
+        table,
+        mapper_kw,
     ):
 
         super(_ClassScanMapperConfig, self).__init__(registry, cls_)

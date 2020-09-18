@@ -155,9 +155,7 @@ class ReturnsRows(roles.ReturnsRowsRole, ClauseElement):
 
 
 class Selectable(ReturnsRows):
-    """Mark a class as being selectable.
-
-    """
+    """Mark a class as being selectable."""
 
     __visit_name__ = "selectable"
 
@@ -1983,9 +1981,7 @@ class Subquery(AliasedReturnsRows):
 
     @classmethod
     def _factory(cls, selectable, name=None):
-        """Return a :class:`.Subquery` object.
-
-        """
+        """Return a :class:`.Subquery` object."""
         return coercions.expect(
             roles.SelectStatementRole, selectable
         ).subquery(name=name)
@@ -2294,7 +2290,10 @@ class Values(Generative, FromClause):
     _data = ()
 
     _traverse_internals = [
-        ("_column_args", InternalTraversal.dp_clauseelement_list,),
+        (
+            "_column_args",
+            InternalTraversal.dp_clauseelement_list,
+        ),
         ("_data", InternalTraversal.dp_dml_multi_values),
         ("name", InternalTraversal.dp_string),
         ("literal_binds", InternalTraversal.dp_boolean),
@@ -3702,7 +3701,13 @@ class SelectState(util.MemoizedSlots, CompileState):
             else:
 
                 self.from_clauses = self.from_clauses + (
-                    Join(left, right, onclause, isouter=isouter, full=full,),
+                    Join(
+                        left,
+                        right,
+                        onclause,
+                        isouter=isouter,
+                        full=full,
+                    ),
                 )
 
     @util.preload_module("sqlalchemy.sql.util")
@@ -3869,12 +3874,27 @@ class Select(
             ("_from_obj", InternalTraversal.dp_clauseelement_list),
             ("_where_criteria", InternalTraversal.dp_clauseelement_tuple),
             ("_having_criteria", InternalTraversal.dp_clauseelement_tuple),
-            ("_order_by_clauses", InternalTraversal.dp_clauseelement_tuple,),
-            ("_group_by_clauses", InternalTraversal.dp_clauseelement_tuple,),
-            ("_setup_joins", InternalTraversal.dp_setup_join_tuple,),
-            ("_legacy_setup_joins", InternalTraversal.dp_setup_join_tuple,),
+            (
+                "_order_by_clauses",
+                InternalTraversal.dp_clauseelement_tuple,
+            ),
+            (
+                "_group_by_clauses",
+                InternalTraversal.dp_clauseelement_tuple,
+            ),
+            (
+                "_setup_joins",
+                InternalTraversal.dp_setup_join_tuple,
+            ),
+            (
+                "_legacy_setup_joins",
+                InternalTraversal.dp_setup_join_tuple,
+            ),
             ("_correlate", InternalTraversal.dp_clauseelement_tuple),
-            ("_correlate_except", InternalTraversal.dp_clauseelement_tuple,),
+            (
+                "_correlate_except",
+                InternalTraversal.dp_clauseelement_tuple,
+            ),
             ("_limit_clause", InternalTraversal.dp_clauseelement),
             ("_offset_clause", InternalTraversal.dp_clauseelement),
             ("_for_update_arg", InternalTraversal.dp_clauseelement),
@@ -4273,7 +4293,9 @@ class Select(
         else:
             return cls._create_future_select(*args)
 
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
         raise NotImplementedError()
 
     def _scalar_type(self):
@@ -4435,7 +4457,12 @@ class Select(
            rather than implicitly producing a subquery.
 
         """
-        return self.join(target, onclause=onclause, isouter=True, full=full,)
+        return self.join(
+            target,
+            onclause=onclause,
+            isouter=True,
+            full=full,
+        )
 
     @property
     def froms(self):
@@ -4660,7 +4687,10 @@ class Select(
         for c in coercions._expression_collection_was_a_list(
             "columns", "Select.with_only_columns", columns
         ):
-            c = coercions.expect(roles.ColumnsClauseRole, c,)
+            c = coercions.expect(
+                roles.ColumnsClauseRole,
+                c,
+            )
             # TODO: why are we doing this here?
             if isinstance(c, ScalarSelect):
                 c = c.self_group(against=operators.comma_op)
@@ -5210,9 +5240,7 @@ class ScalarSelect(roles.InElementRole, Generative, Grouping):
 
 
 class Exists(UnaryExpression):
-    """Represent an ``EXISTS`` clause.
-
-    """
+    """Represent an ``EXISTS`` clause."""
 
     _from_objects = []
     inherit_cache = True

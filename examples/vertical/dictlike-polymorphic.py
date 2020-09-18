@@ -67,9 +67,7 @@ class PolymorphicVerticalProperty(object):
 
     @value.comparator
     class value(PropComparator):
-        """A comparator for .value, builds a polymorphic comparison via CASE.
-
-        """
+        """A comparator for .value, builds a polymorphic comparison via CASE."""
 
         def __init__(self, cls):
             self.cls = cls
