@@ -96,7 +96,22 @@ class HasCacheKey(object):
             )
 
     @util.preload_module("sqlalchemy.sql.elements")
-    def _gen_cache_key(self, anon_map, bindparams):
+    def _gen_cache_key(self, anon_map, bindparams,
+        # bytewise optimizations for cpython
+        NO_CACHE=NO_CACHE,
+        STATIC_CACHE_KEY=STATIC_CACHE_KEY,
+        ANON_NAME=ANON_NAME,
+        isinstance=isinstance,
+        CALL_GEN_CACHE_KEY=CALL_GEN_CACHE_KEY,
+        CACHE_IN_PLACE=CACHE_IN_PLACE,
+        PROPAGATE_ATTRS=PROPAGATE_ATTRS,
+        InternalTraversal=InternalTraversal,
+        util=util,
+        # id
+        # str
+        # KeyError
+        # _cache_key_traversal_visitor - needs some slight reorg
+    ):
         """return an optional cache key.
 
         The cache key is a tuple which can contain any series of
