@@ -3438,8 +3438,17 @@ class JoinCondition(object):
                     if (
                         not pr.mapper._dispose_called
                         and pr not in self.prop._reverse_property
+                        # original style: attribute only
                         and pr.key not in self.prop._overlaps
                         and self.prop.key not in pr._overlaps
+                        # new style: fully-qualified relationship name
+                        and ("%s.%s" % (pr.parent.entity.__name__, pr.key))
+                        not in self.prop._overlaps
+                        and (
+                            "%s.%s"
+                            % (self.prop.parent.entity.__name__, self.prop.key)
+                        )
+                        not in pr._overlaps
                         # note: the "__*" symbol is used internally by
                         # SQLAlchemy as a general means of suppressing the
                         # overlaps warning for some extension cases, however
@@ -3457,10 +3466,10 @@ class JoinCondition(object):
                             or not self.prop.parent.common_parent(pr.parent)
                         )
                     ):
-
                         other_props.append((pr, fr_))
 
                 if other_props:
+                    # note: `sorted(set())` is used to deduplicate
                     util.warn(
                         "relationship '%s' will copy column %s to column %s, "
                         "which conflicts with relationship(s): %s. "
@@ -3472,7 +3481,7 @@ class JoinCondition(object):
                         "constraints are partially overlapping, the "
                         "orm.foreign() "
                         "annotation can be used to isolate the columns that "
-                        "should be written towards.   To silence this "
+                        "should be written towards.  To silence this "
                         "warning, add the parameter 'overlaps=\"%s\"' to the "
                         "'%s' relationship."
                         % (
@@ -3485,7 +3494,15 @@ class JoinCondition(object):
                                     for (pr, fr_) in other_props
                                 )
                             ),
-                            ",".join(sorted(pr.key for pr, fr in other_props)),
+                            ",".join(
+                                sorted(
+                                    set(
+                                        "%s.%s"
+                                        % (pr.parent.entity.__name__, pr.key)
+                                        for pr, fr in other_props
+                                    )
+                                )
+                            ),
                             self.prop,
                         ),
                         code="qzyx",

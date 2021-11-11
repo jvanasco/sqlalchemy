@@ -6517,3 +6517,128 @@ class SecondaryIncludesLocalColsTest(fixtures.MappedTest):
                 params=[{"id_1": "%", "param_1": "%", "primary_keys": [2]}],
             ),
         )
+
+
+class HandlingOverlapsTest(fixtures.MappedTest):
+    """
+    Be smarter about handling overlaps
+    """
+
+    run_define_tables = "each"
+
+    def _fixture_one(
+        self,
+        bar_overlaps=None,
+        biz_overlaps=None,
+    ):
+        Base = self.mapper_registry.generate_base()
+
+        class _Mixin(object):
+            _object_type_id = None
+
+        class SharedTarget(Base):
+            __tablename__ = "shared_target"
+            id = Column(Integer, primary_key=True)
+            object_type_id = Column(Integer, nullable=False)
+            object_id = Column(Integer, nullable=False)
+
+        class Foo(_Mixin, Base):
+            __tablename__ = "foo"
+            _object_type_id = 1
+            id = Column(Integer, primary_key=True)
+            rel = relationship(
+                "SharedTarget",
+                primaryjoin=(
+                    "and_(Foo.id==foreign(SharedTarget.object_id),"
+                    "     SharedTarget.object_type_id==%s,"
+                    "     )" % _object_type_id
+                ),
+            )
+
+        class Bar(_Mixin, Base):
+            __tablename__ = "bar"
+            _object_type_id = 2
+            id = Column(Integer, primary_key=True)
+            rel = relationship(
+                "SharedTarget",
+                primaryjoin=(
+                    "and_(Bar.id==foreign(SharedTarget.object_id),"
+                    "     SharedTarget.object_type_id==%s,"
+                    "     )" % _object_type_id
+                ),
+                overlaps=bar_overlaps,
+            )
+
+        class Biz(_Mixin, Base):
+            __tablename__ = "biz"
+            _object_type_id = 3
+            id = Column(Integer, primary_key=True)
+            rel = relationship(
+                "SharedTarget",
+                primaryjoin=(
+                    "and_(Biz.id==foreign(SharedTarget.object_id),"
+                    "     SharedTarget.object_type_id==%s,"
+                    "     )" % _object_type_id
+                ),
+                overlaps=biz_overlaps,
+            )
+
+        configure_mappers()
+        assert self.tables_test_metadata is Base.metadata
+        self.tables_test_metadata.create_all(testing.db)
+
+        return SharedTarget, Foo, Bar, Biz
+
+    @testing.provide_metadata
+    def test_warn_one(self):
+        assert_raises_message(
+            exc.SAWarning,
+            r"""To silence this warning, add the parameter 'overlaps="Foo.rel"' to the 'Bar.rel' relationship.""",
+            self._fixture_one,
+        )
+
+    @testing.provide_metadata
+    def test_warn_one__bar(self):
+        assert_raises_message(
+            exc.SAWarning,
+            r"""To silence this warning, add the parameter 'overlaps="Bar.rel,Foo.rel"' to the 'Biz.rel' relationship.""",
+            self._fixture_one,
+            bar_overlaps="Foo.rel",
+        )
+
+    @testing.provide_metadata
+    def test_warn_one__bar_biz_a(self):
+        self._fixture_one(
+            bar_overlaps="Foo.rel",
+            biz_overlaps="Foo.rel,Bar.rel",
+        )
+
+    @testing.provide_metadata
+    def test_warn_one__bar_biz_b(self):
+        self._fixture_one(
+            bar_overlaps="Foo.rel",
+            biz_overlaps="Bar.rel,Foo.rel",
+        )
+
+    @testing.provide_metadata
+    def test_warn_one__legacy__bar(self):
+        assert_raises_message(
+            exc.SAWarning,
+            r"""To silence this warning, add the parameter 'overlaps="Foo.rel"' to the 'Biz.rel' relationship.""",
+            self._fixture_one,
+            bar_overlaps="rel",
+        )
+
+    @testing.provide_metadata
+    def test_warn_one__legacy__bar_biz_a(self):
+        self._fixture_one(
+            bar_overlaps="rel",
+            biz_overlaps="rel",
+        )
+
+    @testing.provide_metadata
+    def test_warn_one__legacy__bar_biz_b(self):
+        self._fixture_one(
+            bar_overlaps="rel",
+            biz_overlaps="rel,rel",
+        )

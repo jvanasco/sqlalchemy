@@ -1,0 +1,10 @@
+.. change::
+    :tags: engine, bug
+    :tickets: 7309
+
+    Warnings for overlapping relationships detected by
+    :meth:`sqlalchemy.orm.configure_mappers` will now emit a fully qualified
+    relationship name, consisting of ``ClassName.RelationshipAttribute``, not
+    just the relationship attribute.  To silence warnings,
+    :paramref:`sqlalchemy.orm.relationship.overlaps` will now accept the fully
+    qualified relationship name, not just the relationship attribute.
